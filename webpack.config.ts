@@ -2,44 +2,29 @@ import path from 'path';
 import { Configuration } from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+// import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 
 const devServer: DevServerConfiguration = {};
 let config: Configuration = { devServer };
 
 config = {
-    // entry: {
-    //     index: {
-    //         import: './src/index.js',
-    //         dependOn: 'shared',
-    //     },
-    //     print: './src/print/print.js',
-    //     another: {
-    //         import: './src/another/another.js',
-    //         dependOn: 'shared'
-    //     },
-    //     shared: 'lodash',
-    // },
+    
+    mode: 'development',
     entry: {
-        // index: './src/index.ts',
         cpl3: './src/cpl3.ts'
     },
     devtool: 'inline-source-map',
     devServer: {
-        static: {
-            directory: path.join(__dirname, 'dist'),
-        },
-        historyApiFallback: true,
-        port: 9000,
+        liveReload: true
     },
     // mode: 'development',
     plugins: [
         new HtmlWebpackPlugin({
             template: './src/template/cpl3.html',
             hash: false,
-            // chunks: ['cpl3'],
+            chunks: ['cpl3'],
             // excludeChunks: ['index'],
-            filename: 'cpl3.html'
+            // filename: 'cpl3.html' // don't use filname value for running dev server
         }),
         // new CleanWebpackPlugin(),
     ],
@@ -47,7 +32,7 @@ config = {
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist'),
         clean: true,
-        publicPath: '/dist'
+        // publicPath: '/dist'
     },
     optimization: {
         runtimeChunk: 'single',
