@@ -31,8 +31,8 @@ const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
 );
 
 camera.position.x = settings.xAdjust;
-camera.position.y = 50;
-camera.position.z = settings.zAdjust * 2;
+camera.position.y = settings.xAdjust * 2;
+camera.position.z = settings.zAdjust * 2.5;
 camera.lookAt(new THREE.Vector3(settings.xAdjust, 0, 40));
 cpl3Scene.add(camera);
 
