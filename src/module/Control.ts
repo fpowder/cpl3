@@ -1,9 +1,11 @@
+import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-
+import settings from '../config/settings';
 export default class Controls {
-    control: OrbitControls;
+    orbitControls: OrbitControls;
 
     constructor(camera: THREE.Camera, element: HTMLElement) {
-        this.control = new OrbitControls(camera, element);
+        this.orbitControls = new OrbitControls(camera, element);
+        this.orbitControls.target.set(settings.xAdjust, 0, settings.zAdjust);
     }
 }

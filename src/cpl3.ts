@@ -7,6 +7,9 @@ import { cpl3Scene } from './module/Basic';
 import Floor from './component/Floor';
 
 import Helper from './module/Helper';
+import Controls from './module/Control';
+import settings from './config/settings';
+
 import './css/cpl3.css';
 
 // Renderer
@@ -27,10 +30,10 @@ const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
     1000
 );
 
-camera.position.x = 0;
-camera.position.y = 10;
-camera.position.z = 70;
-camera.lookAt(new THREE.Vector3(0, 0, 0));
+camera.position.x = settings.xAdjust;
+camera.position.y = 50;
+camera.position.z = settings.zAdjust * 2;
+camera.lookAt(new THREE.Vector3(settings.xAdjust, 0, 40));
 cpl3Scene.add(camera);
 
 // Light
@@ -50,7 +53,8 @@ const cpl3Floor: Floor = new Floor(cpl3Scene);
 const helper: Helper = new Helper(cpl3Scene);
 
 // OrbitControls
-const control: OrbitControls = new OrbitControls(camera, renderer.domElement);
+const controls: Controls = new Controls(camera, renderer.domElement);
+controls.orbitControls.update();
 
 // test mesh for check position on grid
 const testMesh = new Mesh(
@@ -77,6 +81,8 @@ function setSize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     
+    // controls.orbitControls.update();
+
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.render(cpl3Scene, camera);
 }
