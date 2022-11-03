@@ -1,4 +1,12 @@
+
 import * as THREE from 'three';
+import { Mesh } from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { cpl3Scene } from './module/Basic';
+
+import Floor from './component/Floor';
+
+import Helper from './module/Helper';
 import './css/cpl3.css';
 
 // Renderer
@@ -11,9 +19,6 @@ const renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1);
 
-// Scene
-const scene: THREE.Scene = new THREE.Scene();
-
 // Camera
 const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
     75,
@@ -22,36 +27,49 @@ const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
     1000
 );
 
-camera.position.x = 1;
-camera.position.y = 2;
-camera.position.z = 5;
-scene.add(camera);
+camera.position.x = 0;
+camera.position.y = 10;
+camera.position.z = 70;
+camera.lookAt(new THREE.Vector3(0, 0, 0));
+cpl3Scene.add(camera);
 
 // Light
+const ambientLight: THREE.AmbientLight = new THREE.AmbientLight('white', 0.4);
+cpl3Scene.add(ambientLight);
+
 const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.x = 1;
+light.position.x = 0;
 light.position.z = 2;
-scene.add(light);
-// Mesh
-const geometry: THREE.BoxGeometry = new THREE.BoxGeometry(1, 1, 1);
-const material: THREE.MeshStandardMaterial = new THREE.MeshStandardMaterial({
-    color: 'seagreen'
-});
-const mesh: THREE.Mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
+light.lookAt(0, 0, 0);
+cpl3Scene.add(light);
+
+// floor mesh
+const cpl3Floor: Floor = new Floor(cpl3Scene); 
+
+// Helper
+const helper: Helper = new Helper(cpl3Scene);
+
+// OrbitControls
+const control: OrbitControls = new OrbitControls(camera, renderer.domElement);
+
+// test mesh for check position on grid
+const testMesh = new Mesh(
+    new THREE.BoxGeometry(1, 1, 1),
+    new THREE.MeshPhongMaterial({color: 'pink'})
+);
+testMesh.position.y = 0.5;
+testMesh.position.x = 1;
+cpl3Scene.add(testMesh);
 
 // draw
 const clock: THREE.Clock = new THREE.Clock();
 const draw = (): void => {
     const time = clock.getElapsedTime();
 
-    mesh.rotation.y = 2 * time;
-    mesh.position.y = time;
-    if(mesh.position.y > 3) {
-        mesh.position.y = 0;
-    }
-    renderer.render(scene, camera);
+    // fps update
+    helper.stats.update();
 
+    renderer.render(cpl3Scene, camera);
     renderer.setAnimationLoop(draw);
 }
 
@@ -60,7 +78,7 @@ function setSize() {
     camera.updateProjectionMatrix();
     
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.render(scene, camera);
+    renderer.render(cpl3Scene, camera);
 }
 
 window.addEventListener('resize', setSize);
