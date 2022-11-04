@@ -13,7 +13,7 @@ export default class Pillar {
     meshes: Mesh[] = [];
 
     width: number = 1;
-    height: number = 30;
+    height: number = 15;
     depth: number = 1;
     
     constructor(cpl3Scene: Scene, positions: {x: number, z: number[]}[]) {
@@ -33,6 +33,7 @@ export default class Pillar {
                 const clone: Mesh = this.mesh.clone();
                 clone.position.x = xPos + settings.spacer / 2;
                 clone.position.z = eachZ + settings.spacer / 2;
+                clone.position.y = this.height / 2;
                 this.meshes.push(clone);
                 cpl3Scene.add(clone);
             }

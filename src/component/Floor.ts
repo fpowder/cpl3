@@ -17,8 +17,8 @@ export default class Floor {
 
         // 임시 컬러 사용, 추후 라이트 추가후에 설정값의 조명색으로 변경 필요
         this.geometry = new THREE.BoxGeometry(settings.xGridCnt, this.thickness, settings.zGridCnt);
-        this.material = new THREE.MeshPhongMaterial({color: '#ffe9ac'});
-        // this.material = new THREE.MeshPhongMaterial({color: colors.floor});
+        // this.material = new THREE.MeshPhongMaterial({color: '#ffe9ac'});
+        this.material = new THREE.MeshPhongMaterial({color: colors.floor});
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         
         // position for e-avp data

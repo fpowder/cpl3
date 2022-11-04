@@ -17,6 +17,7 @@ export default class Helper {;
 
         document.body.append(this.stats.dom);
 
-        cpl3Scene.add(this.axesHelper, this.gridHelper);
+        cpl3Scene.add(this.axesHelper);
+        // cpl3Scene.add(this.gridHelper);
     }
 }

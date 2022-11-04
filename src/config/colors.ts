@@ -8,7 +8,7 @@ const colors: {
     background: '#3e1322',   
     light: '#ffe9ac',
     pillar: '#071d28',
-    floor: '#111',
+    floor: '#4b4d4d',
 };
 
 export default colors;

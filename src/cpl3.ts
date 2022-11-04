@@ -11,6 +11,7 @@ import Controls from './module/Control';
 import settings from './config/settings';
 
 import './css/cpl3.css';
+import ParkingArea from './component/ParkingArea';
 
 // Renderer
 const canvas: Element = document.querySelector('#cpl3');
@@ -60,6 +61,9 @@ const pillarPositions: { x: number, z: number[]}[] = [
     { x: 55, z: [130] },
 ];
 new Pillar(cpl3Scene, pillarPositions);
+
+// test parking Area
+new ParkingArea(cpl3Scene);
 
 // Helper
 const helper: Helper = new Helper(cpl3Scene);
