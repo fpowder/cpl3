@@ -6,7 +6,8 @@ const settings = ((): {
     xCordinates: number[],
     zCordinates: number[],
     xAdjust: number,
-    zAdjust: number
+    zAdjust: number,
+    spacer: 1
 } => {
     const xGridCnt: number = 59;
     const zGridCnt: number = 143;
@@ -45,7 +46,8 @@ const settings = ((): {
         xCordinates: xCordinates,
         zCordinates: zCordinates,
         xAdjust: xGridCnt / 2,
-        zAdjust: zGridCnt / 2
+        zAdjust: zGridCnt / 2,
+        spacer: 1
     }
 })();
 

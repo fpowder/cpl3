@@ -5,7 +5,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { cpl3Scene } from './module/Basic';
 
 import Floor from './component/Floor';
-
+import Pillar from './component/Pillar';
 import Helper from './module/Helper';
 import Controls from './module/Control';
 import settings from './config/settings';
@@ -46,8 +46,20 @@ light.position.z = 2;
 light.lookAt(0, 0, 0);
 cpl3Scene.add(light);
 
-// floor mesh
+// floor
 const cpl3Floor: Floor = new Floor(cpl3Scene); 
+
+// pillars in parkingLot
+const pillarPositions: { x: number, z: number[]}[] = [
+    { x: 10, z: [32, 47, 62, 77, 92, 105, 117] },
+    { x: 23, z: [11, 32, 47, 62, 77, 92, 105, 117, 130] },
+    { x: 32, z: [32, 47, 62, 77, 92, 105, 117] },
+    { x: 33, z: [130] },
+    { x: 34, z: [11] },
+    { x: 44, z: [130] },
+    { x: 55, z: [130] },
+];
+new Pillar(cpl3Scene, pillarPositions);
 
 // Helper
 const helper: Helper = new Helper(cpl3Scene);
