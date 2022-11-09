@@ -13,8 +13,8 @@ export default class ParkingArea {
         this.material = new MeshPhongMaterial({color: 'pink'});
 
         this.mesh = new Mesh(this.geometry, this.material);
-        this.mesh.position.x = 11 + 6 / 2 + settings.spacer / 2;
-        this.mesh.position.z = 2 + 10 / 2 + settings.spacer / 2;
+        this.mesh.position.x = 11 + 6 / 2 /* + settings.spacer / 2 */;
+        this.mesh.position.z = 2 + 10 / 2 /* + settings.spacer / 2 */;
         this.mesh.position.y = 0;
 
         cpl3Scene.add(this.mesh);

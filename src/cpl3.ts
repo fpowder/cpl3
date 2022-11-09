@@ -4,10 +4,14 @@ import { Mesh } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { cpl3Scene } from './module/Basic';
 
+// scene components
 import Floor from './component/Floor';
 import Pillar from './component/Pillar';
+
+// threejs modules
 import Helper from './module/Helper';
 import Controls from './module/Control';
+
 import settings from './config/settings';
 
 import './css/cpl3.css';
