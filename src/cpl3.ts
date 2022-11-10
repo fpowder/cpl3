@@ -7,6 +7,8 @@ import { cpl3Scene } from './module/Basic';
 // scene components
 import Floor from './component/Floor';
 import Pillar from './component/Pillar';
+import ParkingArea, { createFromCords } from './component/ParkingArea';
+import Wall, { createFromRanges } from './component/Wall';
 
 // threejs modules
 import Helper from './module/Helper';
@@ -15,7 +17,6 @@ import Controls from './module/Control';
 import settings from './config/settings';
 
 import './css/cpl3.css';
-import ParkingArea from './component/ParkingArea';
 
 // Renderer
 const canvas: Element = document.querySelector('#cpl3');
@@ -67,7 +68,11 @@ const pillarPositions: { x: number, z: number[]}[] = [
 new Pillar(cpl3Scene, pillarPositions);
 
 // test parking Area
-new ParkingArea(cpl3Scene);
+createFromCords();
+
+// test create wall layer
+createFromRanges();
+// new Wall(cpl3Scene, 1, [[1, 143]]);
 
 // Helper
 const helper: Helper = new Helper(cpl3Scene);
