@@ -1,4 +1,4 @@
-import { BoxGeometry, Mesh, MeshPhongMaterial, Scene, Vector3 } from 'three';
+import { BoxGeometry, EdgesGeometry, LineBasicMaterial, LineSegments, Mesh, MeshPhongMaterial, Scene, Vector3 } from 'three';
 import parkingAreaCords from '../config/parkingAreaCords';
 import { cpl3Scene } from '../module/Basic';
 // import settings from '../config/settings';
@@ -20,7 +20,16 @@ export default class ParkingArea {
         this.mesh.position.y = 0;
         this.mesh.position.z = cord.start[1] + cord.vector[1] / 2 /* + settings.spacer / 2 */;
 
-        cpl3Scene.add(this.mesh);
+        // parking area border
+        const borderGeo = new EdgesGeometry(this.geometry);
+        const borderMat = new LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
+        const wireframe = new LineSegments(borderGeo, borderMat);
+
+        wireframe.position.x = this.mesh.position.x;
+        wireframe.position.y = this.mesh.position.y;
+        wireframe.position.z = this.mesh.position.z;
+
+        cpl3Scene.add(this.mesh, wireframe);
     }
 }
 
