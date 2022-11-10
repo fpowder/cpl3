@@ -2193,7 +2193,7 @@
         {
          "columns":14,
          "firstgid":1,
-         "image":"\/assets\/gridtiles.png",
+         "image":".\/gridtiles.png",
          "imageheight":320,
          "imagewidth":448,
          "margin":0,
@@ -2297,7 +2297,7 @@
         {
          "columns":1,
          "firstgid":141,
-         "image":"..\/assets\/parkingArea.png",
+         "image":".\/parkingArea.png",
          "imageheight":164,
          "imagewidth":129,
          "margin":0,
