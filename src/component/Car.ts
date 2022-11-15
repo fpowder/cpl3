@@ -4,9 +4,12 @@ import carGlb from '../asset/resource/models/car.glb';
 export default class Car {
 
     mesh: Mesh;
-    actions: AnimationAction [] = [];
-
     mixer: AnimationMixer;
+
+    moving: boolean;
+
+    forwardAction: AnimationAction;
+    backwardAction: AnimationAction;
 
     constructor(cpl3Scene: Scene) {
 
@@ -20,30 +23,22 @@ export default class Car {
                 });
                 console.log(gltf.scene.children[0]);
                 console.log(gltf.animations);
-                const mesh = gltf.scene.children[0];
-                mesh.position.set(10, 1.3, 120);
+                this.mesh = gltf.scene.children[0] as Mesh;
+                this.mesh.position.set(20, 1.3, 74);
+                this.mesh.castShadow = true;
+                
+                cpl3Scene.add(this.mesh);
 
-                cpl3Scene.add(mesh);
+                this.mesh.animations = gltf.animations;
+                this.mixer = new AnimationMixer(this.mesh);
+                
+                this.forwardAction = this.mixer.clipAction(gltf.animations[1]);
+                this.forwardAction.clampWhenFinished = true;
+                // this.forwardAction.play();
 
-                mesh.animations = gltf.animations;
+                this.backwardAction = this.mixer.clipAction(gltf.animations[0]);
+                this.backwardAction.clampWhenFinished = true;
 
-                this.mixer = new AnimationMixer(mesh);
-                const forwardAction = this.mixer.clipAction(gltf.animations[1]);
-                forwardAction.clampWhenFinished = true;
-                forwardAction.play();
-
-                // this.mesh = gltf.scene.children[0] as Mesh;
-                // this.mesh.position.set(23, 1, 72);
-                // this.mesh.castShadow = true;
-
-                // cpl3Scene.add(this.mesh);
-
-                // this.mesh.animations = gltf.animations;
-                // this.mixer = new AnimationMixer(this.mesh);
-                // console.log(gltf.animations);
-
-                // this.actions[0] = this.mixer.clipAction(this.mesh.animations[0]);
-                // this.actions[0].play();
             }
         );
     }
