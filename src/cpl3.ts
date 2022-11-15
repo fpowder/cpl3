@@ -17,6 +17,7 @@ import Controls from './module/Control';
 import settings from './config/settings';
 
 import './css/cpl3.css';
+import Car from './component/Car';
 
 // Renderer
 const canvas: Element = document.querySelector('#cpl3');
@@ -90,11 +91,21 @@ testMesh.position.y = 0.5;
 testMesh.position.x = 1;
 cpl3Scene.add(testMesh);
 
+// sample car grom glb
+const car = new Car(cpl3Scene);
+
 // draw
 const clock: THREE.Clock = new THREE.Clock();
 const draw = (): void => {
-    const time = clock.getElapsedTime();
+    // const time = clock.getElapsedTime();
+    const delta = clock.getDelta();
 
+    // console.log('time : ', time);
+    // console.log('delta : ', delta);
+
+    if(car.mixer) {
+        car.mixer.update(delta);
+    }
     // fps update
     helper.stats.update();
 

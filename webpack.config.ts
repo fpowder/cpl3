@@ -43,12 +43,12 @@ config = {
     module: {
         rules: [
             {
-                test: /\.glb/,
-                type: 'asset/glb'
-            },
-            {
                 test: /\.css$/i,
                 use: ['style-loader', 'css-loader'],
+            },
+            {
+                test: /\.(glb|gltf)$/i,
+                type: 'asset/resource',
             },
             {
                 test: /\.(png|svg|jpg|jpeg|gif)$/i,
