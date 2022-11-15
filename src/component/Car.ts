@@ -11,6 +11,7 @@ export default class Car {
     forwardAction: AnimationAction;
     backwardAction: AnimationAction;
 
+
     constructor(cpl3Scene: Scene) {
 
         gltfLoader.load(
@@ -26,10 +27,10 @@ export default class Car {
                 this.mesh = gltf.scene.children[0] as Mesh;
                 this.mesh.position.set(20, 1.3, 74);
                 this.mesh.castShadow = true;
-                
                 cpl3Scene.add(this.mesh);
 
                 this.mesh.animations = gltf.animations;
+
                 this.mixer = new AnimationMixer(this.mesh);
                 
                 this.forwardAction = this.mixer.clipAction(gltf.animations[1]);

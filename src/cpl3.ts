@@ -51,6 +51,7 @@ cpl3Scene.add(ambientLight);
 const lightHeight = 100;
 const spotLight1 = new SpotLight(colors.spotLight, 0.5);
 spotLight1.castShadow = true;
+spotLight1.lookAt(settings.xGridCnt / 2, 0, settings.zGridCnt / 2);
 spotLight1.shadow.mapSize.width = 2048;
 spotLight1.shadow.mapSize.height = 2048;
 
@@ -62,15 +63,15 @@ spotLight1.position.set(0, lightHeight, 0);
 spotLight2.position.set(59, lightHeight, 0);
 spotLight3.position.set(0, lightHeight, 143);
 spotLight4.position.set(59, lightHeight, 143);
+
 cpl3Scene.add(spotLight1, spotLight2, spotLight3, spotLight4);
 
 const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.x = 0;
 light.position.y = 0;
 light.position.z = 71.5;
-light.rotateY(90);
 // light.lookAt(21.5, 0, 71.5);
-const lightHelper = new DirectionalLightHelper(light, 5);
+const lightHelper = new DirectionalLightHelper(light, 10);
 
 cpl3Scene.add(lightHelper);
 
