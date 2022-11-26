@@ -1,8 +1,8 @@
 // colors for mesh
 const colors: {
     background: string,
-    light: string,
     spotLight: string,
+    light: string,
     pillar: string,
     floor: string,
     wall: string,

@@ -1,6 +1,6 @@
 
 import * as THREE from 'three';
-import { DirectionalLightHelper, Mesh, SpotLight } from 'three';
+import { DirectionalLightHelper, Mesh, SpotLight, SpotLightHelper } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { cpl3Scene } from './module/Basic';
 
@@ -64,7 +64,10 @@ spotLight2.position.set(59, lightHeight, 0);
 spotLight3.position.set(0, lightHeight, 143);
 spotLight4.position.set(59, lightHeight, 143);
 
-cpl3Scene.add(spotLight1, spotLight2, spotLight3, spotLight4);
+// set spotLight Helper
+const spotLightHelper = new THREE.SpotLightHelper(spotLight1, colors.spotLight);
+
+// cpl3Scene.add(spotLight1, spotLight2, spotLight3, spotLight4);
 
 const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.x = 0;
