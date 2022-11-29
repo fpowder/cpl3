@@ -1,6 +1,6 @@
 
 import * as THREE from 'three';
-import { Mesh } from 'three';
+import { DirectionalLightHelper, Mesh, SpotLight, SpotLightHelper } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { cpl3Scene } from './module/Basic';
 
@@ -18,6 +18,7 @@ import settings from './config/settings';
 
 import './css/cpl3.css';
 import Car from './component/Car';
+import colors from './config/colors';
 
 // Renderer
 const canvas: Element = document.querySelector('#cpl3');
@@ -28,6 +29,9 @@ const renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1);
+
+// shadow
+renderer.shadowMap.enabled = true;
 
 // Camera
 const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
@@ -44,14 +48,39 @@ camera.lookAt(new THREE.Vector3(settings.xAdjust, 0, 40));
 cpl3Scene.add(camera);
 
 // Light
-const ambientLight: THREE.AmbientLight = new THREE.AmbientLight('white', 0.4);
+const ambientLight: THREE.AmbientLight = new THREE.AmbientLight('white', 0);
 cpl3Scene.add(ambientLight);
 
-const light = new THREE.DirectionalLight(0xffffff, 1);
+const lightHeight = 80;
+const spotLight1 = new SpotLight(colors.spotLight, 0.5);
+spotLight1.castShadow = true;
+spotLight1.shadow.mapSize.width = 2048;
+spotLight1.shadow.mapSize.height = 2048;
+spotLight1.target.position.set(settings.xGridCnt / 2, 0, settings.zGridCnt / 2);
+
+cpl3Scene.add(spotLight1.target);
+
+const spotLight2 = spotLight1.clone();
+const spotLight3 = spotLight1.clone();
+const spotLight4 = spotLight1.clone();
+
+spotLight1.position.set(0, 5, 72);
+spotLight2.position.set(59, lightHeight, 0);
+spotLight3.position.set(0, lightHeight, 143);
+spotLight4.position.set(59, lightHeight, 143);
+
+// set spotLight Helper
+const spotLightHelper = new THREE.SpotLightHelper(spotLight1);
+
+cpl3Scene.add(spotLightHelper, spotLight2, spotLight3, spotLight4);
+
+/* const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.x = 0;
-light.position.z = 2;
-light.lookAt(0, 0, 0);
-cpl3Scene.add(light);
+light.position.y = 0;
+light.position.z = 71.5;
+light.rotation.z = Math.PI / 2;
+const lightHelper = new DirectionalLightHelper(light, 10);
+cpl3Scene.add(lightHelper); */
 
 // floor
 const cpl3Floor: Floor = new Floor(cpl3Scene); 
@@ -83,13 +112,13 @@ const controls: Controls = new Controls(camera, renderer.domElement);
 controls.orbitControls.update();
 
 // test mesh for check position on grid
-const testMesh = new Mesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshPhongMaterial({color: 'pink'})
-);
-testMesh.position.y = 0.5;
-testMesh.position.x = 1;
-cpl3Scene.add(testMesh);
+// const testMesh = new Mesh(
+//     new THREE.BoxGeometry(1, 1, 1),
+//     new THREE.MeshPhongMaterial({color: 'pink'})
+// );
+// testMesh.position.y = 0.5;
+// testMesh.position.x = 1;
+// cpl3Scene.add(testMesh);
 
 // sample car grom glb
 const car = new Car(cpl3Scene);
@@ -111,6 +140,8 @@ const draw = (): void => {
 
     renderer.render(cpl3Scene, camera);
     renderer.setAnimationLoop(draw);
+
+    spotLightHelper.update();
 }
 
 function setSize() {
