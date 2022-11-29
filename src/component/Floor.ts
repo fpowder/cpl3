@@ -29,6 +29,9 @@ export default class Floor {
          this.mesh.position.y = this.yAdjust;
         // this.mesh.position.z = 3;
 
+        // 그림자 설정
+        this.mesh.receiveShadow = true;
+
         cpl3Scene.add(this.mesh);
         
     }

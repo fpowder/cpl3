@@ -30,6 +30,9 @@ const renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1);
 
+// shadow
+renderer.shadowMap.enabled = true;
+
 // Camera
 const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
     75,
@@ -48,35 +51,36 @@ cpl3Scene.add(camera);
 const ambientLight: THREE.AmbientLight = new THREE.AmbientLight('white', 0);
 cpl3Scene.add(ambientLight);
 
-const lightHeight = 100;
+const lightHeight = 80;
 const spotLight1 = new SpotLight(colors.spotLight, 0.5);
 spotLight1.castShadow = true;
-spotLight1.lookAt(settings.xGridCnt / 2, 0, settings.zGridCnt / 2);
 spotLight1.shadow.mapSize.width = 2048;
 spotLight1.shadow.mapSize.height = 2048;
+spotLight1.target.position.set(settings.xGridCnt / 2, 0, settings.zGridCnt / 2);
+
+cpl3Scene.add(spotLight1.target);
 
 const spotLight2 = spotLight1.clone();
 const spotLight3 = spotLight1.clone();
 const spotLight4 = spotLight1.clone();
 
-spotLight1.position.set(0, lightHeight, 0);
+spotLight1.position.set(0, 5, 72);
 spotLight2.position.set(59, lightHeight, 0);
 spotLight3.position.set(0, lightHeight, 143);
 spotLight4.position.set(59, lightHeight, 143);
 
 // set spotLight Helper
-const spotLightHelper = new THREE.SpotLightHelper(spotLight1, colors.spotLight);
+const spotLightHelper = new THREE.SpotLightHelper(spotLight1);
 
-// cpl3Scene.add(spotLight1, spotLight2, spotLight3, spotLight4);
+cpl3Scene.add(spotLightHelper, spotLight2, spotLight3, spotLight4);
 
-const light = new THREE.DirectionalLight(0xffffff, 1);
+/* const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.x = 0;
 light.position.y = 0;
 light.position.z = 71.5;
-// light.lookAt(21.5, 0, 71.5);
+light.rotation.z = Math.PI / 2;
 const lightHelper = new DirectionalLightHelper(light, 10);
-
-cpl3Scene.add(lightHelper);
+cpl3Scene.add(lightHelper); */
 
 // floor
 const cpl3Floor: Floor = new Floor(cpl3Scene); 
@@ -136,6 +140,8 @@ const draw = (): void => {
 
     renderer.render(cpl3Scene, camera);
     renderer.setAnimationLoop(draw);
+
+    spotLightHelper.update();
 }
 
 function setSize() {

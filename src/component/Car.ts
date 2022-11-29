@@ -18,6 +18,9 @@ export default class Car {
             carGlb,
             (gltf) => {
                 gltf.scene.traverse(child => {
+                    console.log(child);
+                    console.log((child as Mesh).isMesh);
+                    
                     if((child as Mesh).isMesh) {
                         child.castShadow = true;
                     }
@@ -35,7 +38,7 @@ export default class Car {
                 
                 this.forwardAction = this.mixer.clipAction(gltf.animations[1]);
                 this.forwardAction.clampWhenFinished = true;
-                // this.forwardAction.play();
+                this.forwardAction.play();
 
                 this.backwardAction = this.mixer.clipAction(gltf.animations[0]);
                 this.backwardAction.clampWhenFinished = true;
