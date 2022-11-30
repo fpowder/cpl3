@@ -28,7 +28,11 @@ export default class Car {
                 console.log(gltf.scene.children[0]);
                 console.log(gltf.animations);
                 this.mesh = gltf.scene.children[0] as Mesh;
+
+                // temporary position
                 this.mesh.position.set(20, 1.3, 74);
+                
+                // cast shadow true
                 this.mesh.castShadow = true;
                 cpl3Scene.add(this.mesh);
 

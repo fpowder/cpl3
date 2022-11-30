@@ -16,14 +16,18 @@ export default class Wall {
     mesh: Mesh;
 
     width: number = 1;
-    thickness: number = 1;
+    thickness: number = 2;
 
     constructor(cpl3Scene: Scene, xCord: number, zRanges: number[][]) {
 
         for(const zRange of zRanges) {
             const eachDepth = zRange[1] - zRange[0] + 1;
             this.geometry = new BoxGeometry(this.width, this.thickness, eachDepth);
-            this.material = new MeshPhongMaterial({color: colors.wall});
+            this.material = new MeshPhongMaterial(
+            {
+                color: colors.wall,
+                
+            });
             this.mesh = new Mesh(this.geometry, this.material);
 
             this.mesh.position.x = xCord - settings.spacer / 2;

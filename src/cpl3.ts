@@ -48,31 +48,55 @@ camera.lookAt(new THREE.Vector3(settings.xAdjust, 0, 40));
 cpl3Scene.add(camera);
 
 // Light
-const ambientLight: THREE.AmbientLight = new THREE.AmbientLight('white', 0);
+const ambientLight: THREE.AmbientLight = new THREE.AmbientLight('white', 0.5);
 cpl3Scene.add(ambientLight);
 
-const lightHeight = 80;
-const spotLight1 = new SpotLight(colors.spotLight, 0.5);
-spotLight1.castShadow = true;
+const lightHeight = 30;
+const spotLight1 = new SpotLight(colors.spotLight, 0.4);
+
 spotLight1.shadow.mapSize.width = 2048;
 spotLight1.shadow.mapSize.height = 2048;
 spotLight1.target.position.set(settings.xGridCnt / 2, 0, settings.zGridCnt / 2);
-
-cpl3Scene.add(spotLight1.target);
 
 const spotLight2 = spotLight1.clone();
 const spotLight3 = spotLight1.clone();
 const spotLight4 = spotLight1.clone();
 
-spotLight1.position.set(0, 5, 72);
-spotLight2.position.set(59, lightHeight, 0);
-spotLight3.position.set(0, lightHeight, 143);
-spotLight4.position.set(59, lightHeight, 143);
+const sideSpotLight1 = spotLight1.clone();
+const sideSpotLight2 = spotLight1.clone();
+
+spotLight1.position.set(-10, lightHeight, 0);
+spotLight2.position.set(69, lightHeight, 0);
+spotLight3.position.set(-10, lightHeight, 153);
+spotLight4.position.set(69, lightHeight, 153);
+
+sideSpotLight1.position.set(99, lightHeight - 15, 143 / 2);
+sideSpotLight2.position.set(-40, lightHeight - 15, 143 / 2);
+
+cpl3Scene.add(spotLight1.target);
+cpl3Scene.add(spotLight2.target);
+cpl3Scene.add(spotLight3.target);
+cpl3Scene.add(spotLight4.target);
+
+cpl3Scene.add(sideSpotLight1.target);
+cpl3Scene.add(sideSpotLight2.target);
 
 // set spotLight Helper
-const spotLightHelper = new THREE.SpotLightHelper(spotLight1);
+const spotLight1Helper = new THREE.SpotLightHelper(spotLight1, 'seagreen');
+const spotLight2Helper = new THREE.SpotLightHelper(spotLight2, 'red');
+const spotLight3Helper = new THREE.SpotLightHelper(spotLight3, 'blue');
+const spotLight4Helper = new THREE.SpotLightHelper(spotLight4, 'pink');
 
-cpl3Scene.add(spotLightHelper, spotLight2, spotLight3, spotLight4);
+const sideSpot1Helper = new THREE.SpotLightHelper(sideSpotLight1,'white');
+const sideSpot2Helper = new THREE.SpotLightHelper(sideSpotLight2,'white');
+
+spotLight1.castShadow = true;
+
+cpl3Scene.add(spotLight1, spotLight2, spotLight3, spotLight4, sideSpotLight1, sideSpotLight2);
+// cpl3Scene.add(spotLight1Helper, spotLight2Helper, spotLight3Helper, spotLight4Helper);
+cpl3Scene.add(sideSpot1Helper, sideSpot2Helper);
+
+spotLight1Helper.update();
 
 /* const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.x = 0;
@@ -141,7 +165,14 @@ const draw = (): void => {
     renderer.render(cpl3Scene, camera);
     renderer.setAnimationLoop(draw);
 
-    spotLightHelper.update();
+    spotLight1Helper.update();
+    spotLight2Helper.update();
+    spotLight3Helper.update();
+    spotLight4Helper.update();
+
+    sideSpot1Helper.update();
+    sideSpot2Helper.update();
+    
 }
 
 function setSize() {
@@ -157,7 +188,3 @@ function setSize() {
 window.addEventListener('resize', setSize);
 
 draw();
-
-
-
-
