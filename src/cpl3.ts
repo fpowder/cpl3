@@ -19,6 +19,7 @@ import settings from './config/settings';
 import './css/cpl3.css';
 import Car from './component/Car';
 import colors from './config/colors';
+import Gate from './component/Gate';
 
 // Renderer
 const canvas: Element = document.querySelector('#cpl3');
@@ -87,8 +88,8 @@ const spotLight2Helper = new THREE.SpotLightHelper(spotLight2, 'red');
 const spotLight3Helper = new THREE.SpotLightHelper(spotLight3, 'blue');
 const spotLight4Helper = new THREE.SpotLightHelper(spotLight4, 'pink');
 
-const sideSpot1Helper = new THREE.SpotLightHelper(sideSpotLight1,'white');
-const sideSpot2Helper = new THREE.SpotLightHelper(sideSpotLight2,'white');
+const sideSpot1Helper = new THREE.SpotLightHelper(sideSpotLight1, 'white');
+const sideSpot2Helper = new THREE.SpotLightHelper(sideSpotLight2, 'white');
 
 spotLight1.castShadow = true;
 
@@ -144,8 +145,11 @@ controls.orbitControls.update();
 // testMesh.position.x = 1;
 // cpl3Scene.add(testMesh);
 
-// sample car grom glb
+// sample car from glb
 const car = new Car(cpl3Scene);
+
+// sample gate from glb
+const gate = new Gate(cpl3Scene);
 
 // draw
 const clock: THREE.Clock = new THREE.Clock();
