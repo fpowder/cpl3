@@ -6,8 +6,11 @@ import colors from '../config/colors';
 
 export default class Gate {
 
-    arrowMesh: Mesh;
+    entranceArrowMesh: Mesh;
     entranceMesh: Mesh;
+
+    exitArrowMesh: Mesh;
+    exitMesh: Mesh;
     
     constructor(cpl3Scene: Scene) {
         gltfLoader.load(
@@ -31,18 +34,33 @@ export default class Gate {
                 this.entranceMesh.material.polygonOffsetFactor = -2;
                 this.entranceMesh.material.polygonOffsetUnits = 0.1;
                 // this.entranceMesh.material.depthTest = true;
-
                 // cpl3Scene.overrideMaterial = this.entranceMesh.material;
+                
+                // exitMesh (34, 40)
+                this.exitMesh = this.entranceMesh.clone();
+                
+                // entranceArrowMesh
+                this.entranceArrowMesh = gltf.scene.children[0] as Mesh;
+                this.entranceArrowMesh.material = new MeshPhongMaterial({ color: 'seagreen' });
 
+                // exitArrowMesh
+                this.exitArrowMesh = this.entranceArrowMesh.clone();
+
+                // gate position
                 this.entranceMesh.position.set(34 +  4.5, 0, 107);
+                this.exitMesh.position.set(34 + 4.5, 0, 40 + 8);
+                this.exitMesh.rotateY(Math.PI);
 
-                // arrowMesh
-                this.arrowMesh = gltf.scene.children[0] as Mesh;
-                this.arrowMesh.material = new MeshPhongMaterial({ color: 'seagreen' });
-                this.arrowMesh.position.set(34 + 4.5, 0, 107);
+                // arrow position
+                this.entranceArrowMesh.position.set(34 + 4.5, 0, 107);
+                this.exitArrowMesh.position.set(34 + 4.5, 0, 40 + 8);
+                this.exitArrowMesh.rotateY(Math.PI);
 
                 cpl3Scene.add(this.entranceMesh);
-                cpl3Scene.add(this.arrowMesh);
+                cpl3Scene.add(this.entranceArrowMesh);
+
+                cpl3Scene.add(this.exitMesh);
+                cpl3Scene.add(this.exitArrowMesh);
             }
         )
     }
