@@ -1,11 +1,13 @@
 import { gltfLoader  } from '../module/Basic';
 import { Mesh, MeshPhongMaterial, Scene } from 'three';
 import gateGlb from '../asset/resource/models/gate.glb';
+// import gateGlb from '../asset/resource/models/gate2.glb';
 import colors from '../config/colors';
 
 export default class Gate {
 
-    mesh: Mesh;
+    arrowMesh: Mesh;
+    entranceMesh: Mesh;
     
     constructor(cpl3Scene: Scene) {
         gltfLoader.load(
@@ -22,14 +24,25 @@ export default class Gate {
                 });
                 console.log(gltf.scene.children);
                 
-                this.mesh = gltf.scene.children[0] as Mesh;
-                this.mesh.material = new MeshPhongMaterial({
-                    color: colors.gate
-                });
-                // position test
-                this.mesh.position.set(34 +  4.5, 0, 107);
+                // entranceMesh
+                this.entranceMesh = gltf.scene.children[1] as Mesh;
+                this.entranceMesh.material = new MeshPhongMaterial({ color: colors.gate });
+                this.entranceMesh.material.polygonOffset = true;
+                this.entranceMesh.material.polygonOffsetFactor = -2;
+                this.entranceMesh.material.polygonOffsetUnits = 0.1;
+                // this.entranceMesh.material.depthTest = true;
 
-                cpl3Scene.add(this.mesh);
+                // cpl3Scene.overrideMaterial = this.entranceMesh.material;
+
+                this.entranceMesh.position.set(34 +  4.5, 0, 107);
+
+                // arrowMesh
+                this.arrowMesh = gltf.scene.children[0] as Mesh;
+                this.arrowMesh.material = new MeshPhongMaterial({ color: 'seagreen' });
+                this.arrowMesh.position.set(34 + 4.5, 0, 107);
+
+                cpl3Scene.add(this.entranceMesh);
+                cpl3Scene.add(this.arrowMesh);
             }
         )
     }

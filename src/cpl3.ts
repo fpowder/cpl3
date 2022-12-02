@@ -1,7 +1,6 @@
 
 import * as THREE from 'three';
-import { DirectionalLightHelper, Mesh, SpotLight, SpotLightHelper } from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
 import { cpl3Scene } from './module/Basic';
 
 // scene components
@@ -53,7 +52,7 @@ const ambientLight: THREE.AmbientLight = new THREE.AmbientLight('white', 0.5);
 cpl3Scene.add(ambientLight);
 
 const lightHeight = 30;
-const spotLight1 = new SpotLight(colors.spotLight, 0.4);
+const spotLight1 = new THREE.SpotLight(colors.spotLight, 0.4);
 
 spotLight1.shadow.mapSize.width = 2048;
 spotLight1.shadow.mapSize.height = 2048;
