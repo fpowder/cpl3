@@ -1,4 +1,4 @@
-import { AnimationMixer, Scene, WebGLRenderer } from 'three';
+import { Scene } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 /** THREE js 의 모듈들을 정의 */

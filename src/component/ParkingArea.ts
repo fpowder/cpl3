@@ -1,4 +1,4 @@
-import { BoxGeometry, EdgesGeometry, LineBasicMaterial, LineSegments, Mesh, MeshPhongMaterial, Scene, Vector3 } from 'three';
+import { BoxGeometry, EdgesGeometry, LineBasicMaterial, LineSegments, Mesh, MeshPhongMaterial, Scene } from 'three';
 import parkingAreaCords from '../config/parkingAreaCords';
 import { cpl3Scene } from '../module/Basic';
 // import settings from '../config/settings';
