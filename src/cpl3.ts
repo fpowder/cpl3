@@ -5,20 +5,24 @@ import { cpl3Scene } from './module/Basic';
 
 // scene components
 import Floor from './component/Floor';
+import { createFromCords } from './component/ParkingArea';
 import Pillar from './component/Pillar';
-import ParkingArea, { createFromCords } from './component/ParkingArea';
-import Wall, { createFromRanges } from './component/Wall';
+import { createFromRanges } from './component/Wall';
+
+// parking Area 
+import Path from './module/Path';
 
 // threejs modules
-import Helper from './module/Helper';
 import Controls from './module/Control';
+import Helper from './module/Helper';
 
 import settings from './config/settings';
 
-import './css/cpl3.css';
 import Car from './component/Car';
-import colors from './config/colors';
 import Gate from './component/Gate';
+import colors from './config/colors';
+import './css/cpl3.css';
+import { Camera, GridHelper } from 'three';
 
 // Renderer
 const canvas: Element = document.querySelector('#cpl3');
@@ -41,11 +45,20 @@ const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
     1000
 );
 
-camera.position.x = settings.xAdjust;
-camera.position.y = settings.xAdjust * 2;
-camera.position.z = settings.zAdjust * 2.5;
-camera.lookAt(new THREE.Vector3(settings.xAdjust, 0, 40));
+// camera.position.x = settings.xAdjust;
+// camera.position.y = settings.xAdjust * 2;
+// camera.position.z = settings.zAdjust * 2.5;
+// camera.lookAt(new THREE.Vector3(settings.xAdjust, 0, 40));
+
+// vertical camera position set for path view
+camera.position.set(29.5, 70, 71.5);
+camera.rotation.y += Math.PI/2
+camera.lookAt(new THREE.Vector3(29.5, 0, 71.5));
 cpl3Scene.add(camera);
+
+// OrbitControls
+const controls: Controls = new Controls(camera, renderer.domElement);
+controls.orbitControls.update();
 
 // Light
 const ambientLight: THREE.AmbientLight = new THREE.AmbientLight('white', 0.5);
@@ -128,12 +141,14 @@ createFromCords();
 createFromRanges();
 // new Wall(cpl3Scene, 1, [[1, 143]]);
 
+// Parking Area centers
+new Path()
+    .setPaCenters()
+    .setDotsOnPACenters()
+    .setDotsOnPath();
+
 // Helper
 const helper: Helper = new Helper(cpl3Scene);
-
-// OrbitControls
-const controls: Controls = new Controls(camera, renderer.domElement);
-controls.orbitControls.update();
 
 // test mesh for check position on grid
 // const testMesh = new Mesh(

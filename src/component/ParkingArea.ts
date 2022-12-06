@@ -1,4 +1,3 @@
-import { timingSafeEqual } from 'crypto';
 import { BoxGeometry, EdgesGeometry, LineBasicMaterial, LineSegments, Mesh, MeshPhongMaterial, Scene } from 'three';
 import parkingAreaCords from '../config/parkingAreaCords';
 import { cpl3Scene } from '../module/Basic';
@@ -14,8 +13,9 @@ export default class ParkingArea {
     constructor(cpl3Scene: Scene, cord: {start: number[], vector: number[]}) {
 
         this.geometry = new BoxGeometry(cord.vector[0], 0, cord.vector[1]);
+        // 주차 공간 스케일 조정
         this.geometry.scale(0.98, 1, 0.98);
-        this.material = new MeshPhongMaterial({color: '#423e80'});
+        this.material = new MeshPhongMaterial({color: '#5068d4'});
         this.material.polygonOffset = true;
         this.material.polygonOffsetFactor = -3;
         this.material.polygonOffsetUnits = 0.1;
@@ -31,7 +31,7 @@ export default class ParkingArea {
         borderMat.polygonOffset = true;
         borderMat.polygonOffsetFactor = -3;
         borderMat.polygonOffsetUnits = 0.1;
-        
+
         const wireframe = new LineSegments(borderGeo, borderMat);
         wireframe.material.polygonOffset = true;
         wireframe.material.polygonOffsetFactor = -3;

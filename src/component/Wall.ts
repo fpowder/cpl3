@@ -16,7 +16,7 @@ export default class Wall {
     mesh: Mesh;
 
     width: number = 1;
-    thickness: number = 2;
+    thickness: number = 4;
 
     constructor(cpl3Scene: Scene, xCord: number, zRanges: number[][]) {
 

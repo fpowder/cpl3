@@ -13,7 +13,7 @@ export default class Pillar {
     meshes: Mesh[] = [];
 
     width: number = 1;
-    height: number = 7;
+    height: number = 4;
     depth: number = 1;
     
     constructor(cpl3Scene: Scene, positions: {x: number, z: number[]}[]) {
