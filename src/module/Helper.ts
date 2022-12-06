@@ -14,10 +14,10 @@ export default class Helper {;
 
         this.gridHelper.position.x = settings.xAdjust;
         this.gridHelper.position.z = settings.zAdjust;
-
+        this.gridHelper.position.y = 0.1;
         document.body.append(this.stats.dom);
 
         cpl3Scene.add(this.axesHelper);
-        // cpl3Scene.add(this.gridHelper);
+        cpl3Scene.add(this.gridHelper);
     }
 }

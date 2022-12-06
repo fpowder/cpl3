@@ -6,6 +6,7 @@ export default class Controls {
 
     constructor(camera: THREE.Camera, element: HTMLElement) {
         this.orbitControls = new OrbitControls(camera, element);
-        this.orbitControls.target.set(settings.xAdjust, 0, settings.zAdjust);
+        // this.orbitControls.target.set(settings.xAdjust, 0, settings.zAdjust);
+        this.orbitControls.target.set(29.5, 0, 71.5);
     }
 }
