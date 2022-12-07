@@ -25,7 +25,7 @@ export default class Path extends Cpl3Scene{
                 z: start[1] + vector[1] / 2
             });
         }
-        console.log(this.paCenters);
+        // console.log(this.paCenters);
         return this;
     }
 
@@ -36,7 +36,7 @@ export default class Path extends Cpl3Scene{
         dotMat.polygonOffsetFactor = -4;
         dotMat.polygonOffsetUnits = 0.1;
         
-        console.log(this.paCenters);
+        // console.log(this.paCenters);
 
         for(let each of this.paCenters) {
             const dot = new Mesh(dotGeo, dotMat);

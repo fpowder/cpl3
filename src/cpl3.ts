@@ -3,6 +3,9 @@ import * as THREE from 'three';
 
 import { cpl3Scene } from './module/Basic';
 
+// gsap
+import gsap  from 'gsap';
+
 // scene components
 import Floor from './component/Floor';
 import { createFromCords } from './component/ParkingArea';
@@ -22,7 +25,6 @@ import Car from './component/Car';
 import Gate from './component/Gate';
 import colors from './config/colors';
 import './css/cpl3.css';
-import { Camera, GridHelper } from 'three';
 
 // Renderer
 const canvas: Element = document.querySelector('#cpl3');
@@ -45,15 +47,16 @@ const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
     1000
 );
 
-// camera.position.x = settings.xAdjust;
-// camera.position.y = settings.xAdjust * 2;
-// camera.position.z = settings.zAdjust * 2.5;
-// camera.lookAt(new THREE.Vector3(settings.xAdjust, 0, 40));
+camera.position.x = settings.xAdjust;
+camera.position.y = settings.xAdjust * 2;
+camera.position.z = settings.zAdjust * 2.5;
+camera.lookAt(new THREE.Vector3(settings.xAdjust, 0, 40));
 
 // vertical camera position set for path view
-camera.position.set(29.5, 70, 71.5);
-camera.rotation.y += Math.PI/2
-camera.lookAt(new THREE.Vector3(29.5, 0, 71.5));
+// camera.position.set(29.5, 70, 71.5);
+// camera.rotation.y += Math.PI/2
+// camera.lookAt(new THREE.Vector3(29.5, 0, 71.5));
+
 cpl3Scene.add(camera);
 
 // OrbitControls
@@ -161,37 +164,8 @@ const helper: Helper = new Helper(cpl3Scene);
 
 // sample car from glb
 const car = new Car(cpl3Scene);
-
 // sample gate from glb
 const gate = new Gate(cpl3Scene);
-
-// draw
-const clock: THREE.Clock = new THREE.Clock();
-const draw = (): void => {
-    // const time = clock.getElapsedTime();
-    const delta = clock.getDelta();
-
-    // console.log('time : ', time);
-    // console.log('delta : ', delta);
-
-    if(car.mixer) {
-        car.mixer.update(delta);
-    }
-    // fps update
-    helper.stats.update();
-
-    renderer.render(cpl3Scene, camera);
-    renderer.setAnimationLoop(draw);
-
-    spotLight1Helper.update();
-    spotLight2Helper.update();
-    spotLight3Helper.update();
-    spotLight4Helper.update();
-
-    sideSpot1Helper.update();
-    sideSpot2Helper.update();
-    
-}
 
 function setSize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -205,4 +179,65 @@ function setSize() {
 
 window.addEventListener('resize', setSize);
 
-draw();
+// draw (threejs version)
+// const clock: THREE.Clock = new THREE.Clock();
+// const draw = (): void => {
+//     // const time = clock.getElapsedTime();
+//     const delta = clock.getDelta();
+
+//     // console.log('time : ', time);
+//     // console.log('delta : ', delta);
+
+//     if(car.mixer) {
+//         car.mixer.update(delta);
+//     }
+//     // fps update
+//     helper.stats.update();
+
+//     renderer.render(cpl3Scene, camera);
+//     renderer.setAnimationLoop(draw);
+
+//     spotLight1Helper.update();
+//     spotLight2Helper.update();
+//     spotLight3Helper.update();
+//     spotLight4Helper.update();
+
+//     sideSpot1Helper.update();
+//     sideSpot2Helper.update();
+    
+// }
+// draw();
+
+// draw (gsap ticker version);
+const draw = (time: number, deltaTime: number, frame: number) => {
+
+    // console.log('time : ', time);
+    // console.log('delta : ', deltaTime);
+    // console.log('frame : ', frame);
+
+    if(car.mixer) {
+        car.mixer.update(deltaTime);
+    }
+    // fps update
+    helper.stats.update();
+
+    renderer.render(cpl3Scene, camera);
+    renderer.setAnimationLoop(XRFrameRequestCallback);
+
+    spotLight1Helper.update();
+    spotLight2Helper.update();
+    spotLight3Helper.update();
+    spotLight4Helper.update();
+
+    sideSpot1Helper.update();
+    sideSpot2Helper.update();
+}
+
+function XRFrameRequestCallback(time, XRFrame) {
+    draw(time, null, XRFrame);
+};
+
+gsap.ticker.add(draw);
+gsap.ticker.fps(60);
+
+
