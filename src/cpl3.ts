@@ -184,8 +184,8 @@ window.addEventListener('resize', setSize);
 // const draw = (): void => {
 //     // const time = clock.getElapsedTime();
 //     const delta = clock.getDelta();
-
-//     // console.log('time : ', time);
+//     const time = clock.getElapsedTime();
+//     console.log('time : ', time);                            
 //     // console.log('delta : ', delta);
 
 //     if(car.mixer) {
@@ -208,22 +208,32 @@ window.addEventListener('resize', setSize);
 // }
 // draw();
 
+
+
 // draw (gsap ticker version);
-const draw = (time: number, deltaTime: number, frame: number) => {
+const clock: THREE.Clock = new THREE.Clock();
+const render = () => {
 
     // console.log('time : ', time);
-    // console.log('delta : ', deltaTime);
+    // console.log('delta : ', delta);
     // console.log('frame : ', frame);
+    // const delta = clock.getDelta();
 
-    if(car.mixer) {
-        car.mixer.update(deltaTime);
-    }
+    const delta = clock.getDelta();
+
     // fps update
     helper.stats.update();
 
+    if(car.mixer) {
+        car.mixer.update(delta);
+    }
+    // renderer.setAnimationLoop(render);
+    // renderer.render(cpl3Scene, camera);
+    renderer.setAnimationLoop(() => {
+        if(car.mixer) car.mixer.update(delta);
+        
+    });
     renderer.render(cpl3Scene, camera);
-    renderer.setAnimationLoop(XRFrameRequestCallback);
-
     spotLight1Helper.update();
     spotLight2Helper.update();
     spotLight3Helper.update();
@@ -231,13 +241,11 @@ const draw = (time: number, deltaTime: number, frame: number) => {
 
     sideSpot1Helper.update();
     sideSpot2Helper.update();
+
 }
 
-function XRFrameRequestCallback(time, XRFrame) {
-    draw(time, null, XRFrame);
-};
-
-gsap.ticker.add(draw);
-gsap.ticker.fps(60);
+// draw();
+gsap.ticker.add(render);
+gsap.ticker.fps(120);
 
 
