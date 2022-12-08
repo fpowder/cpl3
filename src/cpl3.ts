@@ -244,7 +244,6 @@ const render = () => {
 
 }
 
-// draw();
 gsap.ticker.add(render);
 gsap.ticker.fps(120);
 

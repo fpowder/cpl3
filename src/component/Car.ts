@@ -81,11 +81,21 @@ export default class Car {
                 this.mesh.position, 
                 (() => {
                     return {
-                        duration: 0.1,
+                        duration: 1,
                         ease: 'none',
                         x: eachPath.x,
                         y: 0,
                         z: eachPath.z,
+                        onUpdate: () => {
+                            console.log(this.mesh.position);
+                        },
+                        motionPath: {
+                            path: path,
+                            // alignOrigin: [0.5, 0.5, 0.5],
+                            autoRotate: true,
+                            useRadians: true
+                        },
+                        
                     };
                 })(),
             );
