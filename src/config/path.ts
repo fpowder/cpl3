@@ -1,12 +1,11 @@
-const path: { x?: number, y?: number, z?: number, motionPath?: any[]} [] = [
+const path: { x:number, y: number, z: number, motionPath?: any[]} [] = [
     {x: 38.5, y: 0, z: 113.5},   // 1 entrance bifurcation (입구 분기점)
     {x: 38.5, y: 0, z: 121},    // 2
     {x: 47.5, y: 0, z: 121},    // 3
     {
         x: 52.5, y: 0, z: 124,
         motionPath: [
-            // {x: 47.5, y: 0, z: 121},
-            {x: 47.5, y: 0, z: 121, scale: -0.8, rotation: 10},
+            {x: 47.5, y: 0, z: 121},
             {x: 52.5, y: 0, z: 124},
         ]
     
