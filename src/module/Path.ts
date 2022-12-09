@@ -7,7 +7,7 @@ import path from '../config/path';
 export default class Path extends Cpl3Scene{
 
     paCenters: {x: number, z: number}[] = new Array();
-    path: {x: number, z: number}[] = path;
+    path: { x?: number, y?: number, z?: number, motionPath?: any[]} [] = path;
     
     constructor() {
         super();
