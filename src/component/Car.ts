@@ -1,9 +1,6 @@
-import { gltfLoader } from '../module/Basic';
-import { AnimationMixer, Mesh, Scene, AnimationAction } from 'three';
+import { cpl3Scene, gltfLoader, gsap } from '../module/Basic';
+import { AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial } from 'three';
 import carGlb from '../asset/resource/models/car.glb';
-
-// GSAP
-import gsap from 'gsap';
 
 // ParkingArea move path import
 import path from '../config/path';
@@ -19,13 +16,12 @@ export default class Car {
 
 
     constructor(cpl3Scene: Scene) {
-
+        
         gltfLoader.load(
             carGlb,
             (gltf) => {
                 gltf.scene.traverse(child => {
                     console.log(child);
-                    console.log((child as Mesh).isMesh);
                     
                     if((child as Mesh).isMesh) {
                         child.castShadow = true;
@@ -75,28 +71,56 @@ export default class Car {
         // });
 
         const movePathTl = gsap.timeline();
+        movePathTl.repeat(-1);
+        movePathTl.from(
+            this.mesh.position,
+            {
+                duration: 1,
+                ease: 'none',
+                x: path[0].x,
+                y: path[0].y,
+                z: path[0].z - 6
+            }
+        );
+
         // using to for each event
         for(let eachPath of path) {
             movePathTl.to(
                 this.mesh.position, 
                 (() => {
-                    return {
-                        duration: 1,
-                        ease: 'none',
-                        x: eachPath.x,
-                        y: 0,
-                        z: eachPath.z,
-                        onUpdate: () => {
-                            console.log(this.mesh.position);
-                        },
-                        motionPath: {
-                            path: path,
-                            // alignOrigin: [0.5, 0.5, 0.5],
-                            autoRotate: true,
-                            useRadians: true
-                        },
-                        
-                    };
+                    
+                    if(eachPath.motionPath) {
+                        return {
+                            ease: 'none',
+                            motionPath: {
+                                path: eachPath.motionPath,
+                                alignOrigin: [0.5, 0.5, 0.5],
+                                autoRotate: true,
+                                useRadians: true,
+                                type: 'curve',
+                            },
+                            onUpdate: () => {
+                                console.log(this.mesh.position);
+
+                                const boxGeo = new BoxGeometry(0.1, 0.5, 0.1);
+                                const boxMat = new MeshLambertMaterial({color: 'white'});
+                                const boxMesh = new Mesh(boxGeo, boxMat);
+                                boxMesh.position.set(this.mesh.position.x, this.mesh.position.y, this.mesh.position.z);
+                                cpl3Scene.add(boxMesh);
+                            },
+                        }
+                    } else {
+                        return {
+                            ease: 'none',
+                            x: eachPath.x,
+                            y: 0,
+                            z: eachPath.z,
+                            onUpdate: () => {
+                                // console.log(this.mesh.position);
+                            },
+                        };
+                    }
+
                 })(),
             );
         } // for
