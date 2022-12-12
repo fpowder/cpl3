@@ -1,9 +1,11 @@
 import { cpl3Scene, gltfLoader, gsap } from '../module/Basic';
-import { AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial } from 'three';
+import { AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial, QuadraticBezierCurve3, Vector3, Vector} from 'three';
 import carGlb from '../asset/resource/models/car.glb';
 
 // ParkingArea move path import
 import path from '../config/path';
+
+import { createVec3ObjArr } from '../module/Util';
 export default class Car {
 
     mesh: Mesh;
@@ -14,9 +16,8 @@ export default class Car {
     forwardAction: AnimationAction;
     backwardAction: AnimationAction;
 
-
     constructor(cpl3Scene: Scene) {
-        
+
         gltfLoader.load(
             carGlb,
             (gltf) => {
@@ -72,6 +73,8 @@ export default class Car {
 
         const movePathTl = gsap.timeline();
         movePathTl.repeat(-1);
+
+        // 주차장 진입 애니매이션 설정
         movePathTl.from(
             this.mesh.position,
             {
@@ -90,20 +93,52 @@ export default class Car {
                 (() => {
                     
                     if(eachPath.motionPath) {
+                        
+                        console.log('eachPath.motionPath', eachPath.motionPath);
+
+                        const quadrarticBezier = new QuadraticBezierCurve3(
+                            new Vector3(47.5, 0, 121),
+                            new Vector3(52.5, 0, 121),
+                            new Vector3(52.5, 0, 124)
+                        );
+                        const points = quadrarticBezier.getPoints(10);
+                        console.log('quadratic Points : ', points);
+
+                        // draw quadratic bezier points
+                        // for(let vec3 of points) {
+                        //     const boxGeo = new BoxGeometry(0.1, 0.5, 0.1);
+                        //     const boxMat = new MeshLambertMaterial({color: 'white'});
+                        //     const boxMesh = new Mesh(boxGeo, boxMat);
+                        //     boxMesh.position.set(vec3.x, vec3.y, vec3.z);
+                        //     cpl3Scene.add(boxMesh);
+                        // }
+                        const path = createVec3ObjArr(points);
+
+                        for(let vec3 of path) {
+                            const boxGeo = new BoxGeometry(0.1, 0.5, 0.1);
+                            const boxMat = new MeshLambertMaterial({color: 'white'});
+                            const boxMesh = new Mesh(boxGeo, boxMat);
+                            boxMesh.position.set(vec3.x, vec3.y, vec3.z);
+                            cpl3Scene.add(boxMesh);
+                        }
+
+                        console.log('path: ', path);
+
                         return {
                             ease: 'none',
                             motionPath: {
-                                path: eachPath.motionPath,
-                                alignOrigin: [0.5, 0.5, 0.5],
-                                autoRotate: true,
-                                useRadians: true,
-                                type: 'curve',
+                                path,
+                                // path: testCurve,
+                                // alignOrigin: [0.5, 0.5, 0.5],
+                                // curviness: 0,
+                                // autoRotate: true,
+                                // useRadians: true,
                             },
                             onUpdate: () => {
                                 console.log(this.mesh.position);
 
                                 const boxGeo = new BoxGeometry(0.1, 0.5, 0.1);
-                                const boxMat = new MeshLambertMaterial({color: 'white'});
+                                const boxMat = new MeshLambertMaterial({color: 'red'});
                                 const boxMesh = new Mesh(boxGeo, boxMat);
                                 boxMesh.position.set(this.mesh.position.x, this.mesh.position.y, this.mesh.position.z);
                                 cpl3Scene.add(boxMesh);
@@ -123,6 +158,8 @@ export default class Car {
 
                 })(),
             );
+
         } // for
-    }
+    } // moveThroughPath
+
 }
