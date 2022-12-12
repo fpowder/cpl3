@@ -6,6 +6,7 @@ const path: { x:number, y: number, z: number, motionPath?: any[]} [] = [
         x: 52.5, y: 0, z: 124,
         motionPath: [
             {x: 47.5, y: 0, z: 121},
+            {x: 52.5, y: 0, z: 121},
             {x: 52.5, y: 0, z: 124},
         ]
     
