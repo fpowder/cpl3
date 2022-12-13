@@ -26,6 +26,8 @@ export default class Wall {
             this.material = new MeshPhongMaterial(
             {
                 color: colors.wall,
+                transparent: true,
+                opacity: 0.7
                 
             });
             this.mesh = new Mesh(this.geometry, this.material);

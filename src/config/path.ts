@@ -82,14 +82,21 @@ const path: { x:number, y: number, z: number, quadraticPath?: any[]} [] = [
     
     {x: 38.5, y: 0, z: 29.5},   // 37 exit bifurcation (출구 분기점) 출구 좌표 { x: 38.5, y: 41.5 }
     {
-        x: 32.5, y: 0, z: 22.5,
+        x: 31.5, y: 0, z: 27.5,
         quadraticPath: [
             {x: 38.5,   y: 0, z: 29.5},
-            {x: 32.5,   y: 0, z: 29.5},
-            {x: 32.5,   y: 0, z: 22.5},
+            {x: 31.5,   y: 0, z: 29.5},
+            {x: 31.5,   y: 0, z: 27.5},
         ]
     },   // 38
-    {x: 25,   y: 0, z: 22.5},   // 39
+    {
+        x: 25,   y: 0, z: 22.5,
+        quadraticPath: [
+            {x: 31.5,   y: 0, z: 27.5},
+            {x: 31.5,   y: 0, z: 22.5},
+            {x: 25,   y: 0, z: 22.5},
+        ]
+    },   // 39
     {
         x: 20,   y: 0, z: 35,
         quadraticPath: [
@@ -122,6 +129,7 @@ const path: { x:number, y: number, z: number, quadraticPath?: any[]} [] = [
             {x: 28,   y: 0, z: 121},
         ]
     },    // 66
+    {x: 42.5, y: 0, z: 121}
 ];
 
 export default path;
