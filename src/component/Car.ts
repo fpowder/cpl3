@@ -17,9 +17,9 @@ export default class Car {
     backwardAction: AnimationAction;
 
     stdDistance: number = 4;
-    stdSpeed: number = 20;
+    stdSpeed: number = 12;
 
-    startZOffset: number = 12;
+    startZOffset: number = 20;
 
     constructor(cpl3Scene: Scene) {
 
@@ -66,22 +66,31 @@ export default class Car {
         
         const entranceTl = gsap.timeline();
         const movePathTl = gsap.timeline();
+
         movePathTl.repeat(-1);
         // 주차장 진입 애니매이션 설정
-        movePathTl.from(
+        movePathTl.to(
             this.mesh.position,
             {
-                duration: (() => {
-                    const dist = this.startZOffset;
-                    const basicDuration = this.stdDistance / this.stdSpeed;
-                    return basicDuration * ( dist / this.stdDistance );
-
-                    // return 9;
-                })(),
                 ease: 'none',
                 x: path[0].x,
                 y: path[0].y,
-                z: path[0].z - 12
+                z: path[0].z,
+                duration: (() => {
+                    const dist = this.startZOffset;
+                    const basicDuration = this.stdDistance / this.stdSpeed;
+
+                    console.log('basicDuration: ', basicDuration);
+
+                    const finalDuration = basicDuration * ( dist / this.stdDistance );
+                    console.log('finalDuration: ', finalDuration);
+                    return finalDuration;
+
+                    // return 9;
+                })(),
+                onComplete: () => {
+                    
+                } // onComplete
             }
         );
 
@@ -149,66 +158,9 @@ export default class Car {
                 );
             }
 
-            // movePathTl.to(
-            //     this.mesh.position, 
-            //     (() => {
-                    
-            //         if(eachPath.quadraticPath) {
-                        
-            //             console.log('eachPath.motionPath', eachPath.quadraticPath);
-
-            //             const quadrarticBezier = new QuadraticBezierCurve3(
-            //                 new Vector3(47.5, 0, 121),
-            //                 new Vector3(52.5, 0, 121),
-            //                 new Vector3(52.5, 0, 124)
-            //             );
-            //             const points = quadrarticBezier.getPoints(10);
-            //             console.log('quadratic Points : ', points);
-
-            //             const path = createVec3ObjArr(points);
-
-            //             for(let vec3 of path) {
-            //                 const boxGeo = new BoxGeometry(0.1, 0.5, 0.1);
-            //                 const boxMat = new MeshLambertMaterial({color: 'white'});
-            //                 const boxMesh = new Mesh(boxGeo, boxMat);
-            //                 boxMesh.position.set(vec3.x, vec3.y, vec3.z);
-            //                 cpl3Scene.add(boxMesh);
-            //             }
-
-            //             console.log('path: ', path);
-
-            //             return {
-            //                 ease: 'none',
-            //                 motionPath: {
-            //                     path,
-
-            //                 },
-            //                 onUpdate: () => {
-            //                     console.log(this.mesh.position);
-
-            //                     const boxGeo = new BoxGeometry(0.1, 0.5, 0.1);
-            //                     const boxMat = new MeshLambertMaterial({color: 'red'});
-            //                     const boxMesh = new Mesh(boxGeo, boxMat);
-            //                     boxMesh.position.set(this.mesh.position.x, this.mesh.position.y, this.mesh.position.z);
-            //                     cpl3Scene.add(boxMesh);
-            //                 },
-            //             }
-            //         } else {
-            //             return {
-            //                 ease: 'none',
-            //                 x: eachPath.x,
-            //                 y: 0,
-            //                 z: eachPath.z,
-            //                 onUpdate: () => {
-            //                     // console.log(this.mesh.position);
-            //                 },
-            //             };
-            //         }
-
-            //     })(),
-            // );
-
         } // for
+        console.log('movePathTl', movePathTl);
+        
     } // moveThroughPath
 
 }
