@@ -1,6 +1,10 @@
 import { radToDeg } from 'three/src/math/MathUtils';
 import { Vector3 } from 'three';
 
+export const vec3fromObj = (cord: {x: number, y: number, z: number}) => {
+    return new Vector3(cord.x, cord.y, cord.z);
+}
+
 export const createVec3ObjArr = (vec3Arr: Vector3[]) :any[]  => {
     const result = [];
     for(let eachVector of vec3Arr) {
