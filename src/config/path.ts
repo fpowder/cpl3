@@ -77,10 +77,17 @@ const path: { x:number, y: number, z: number, quadraticPath?: any[]} [] = [
             {x: 37.5,   y: 0, z: 15},
             {x: 43.5,   y: 0, z: 15},
             {x: 43.5,   y: 0, z: 19.5},
-        ]},   // 35
+        ]
+    },   // 35
     {x: 43.5, y: 0, z: 24.5},   // 36
-    
-    {x: 38.5, y: 0, z: 29.5},   // 37 exit bifurcation (출구 분기점) 출구 좌표 { x: 38.5, y: 41.5 }
+    {    // 37 exit bifurcation (출구 분기점) 출구 좌표 { x: 38.5, y: 41.5 }
+        x: 38.5, y: 0, z: 29.5,
+        quadraticPath: [
+            {x: 43.5, y: 0, z: 24.5},
+            {x: 43.5,   y: 0, z: 29.5},
+            {x: 38.5,   y: 0, z: 29.5},
+        ]
+    },   
     {
         x: 31.5, y: 0, z: 27.5,
         quadraticPath: [

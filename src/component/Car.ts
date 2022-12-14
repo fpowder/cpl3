@@ -5,7 +5,7 @@ import carGlb from '../asset/resource/models/car.glb';
 // ParkingArea move path import
 import path from '../config/path';
 
-import { vec3fromObj } from '../module/Util';
+import { vec3fromObj, drawBezierPath } from '../module/Util';
 export default class Car {
 
     mesh: Mesh;
@@ -18,6 +18,8 @@ export default class Car {
 
     stdDistance: number = 4;
     stdSpeed: number = 12;
+
+    bezierPoints: number = 30;
 
     startZOffset: number = 20;
 
@@ -90,11 +92,15 @@ export default class Car {
             new Vector3(quadraticPath[1].x, quadraticPath[1].y, quadraticPath[1].z),
             new Vector3(quadraticPath[2].x, quadraticPath[2].y, quadraticPath[2].z)
         );
+        
+        const points: Vector3[] = quadrarticBezier.getPoints(this.bezierPoints);
 
-        const points: Vector3[] = quadrarticBezier.getPoints(10);
+        // draw quadratic bezier points
+        drawBezierPath(points);
+
         for(let i = 1; i < points.length - 1; i++) {
             if(i !== points.length - 2){
-
+                
                 entranceTl.to(
                     this.mesh.position,
                     {
@@ -109,6 +115,9 @@ export default class Car {
 
                             return duration;
                         })(),
+                        onUpdate: () => {
+                            this.mesh.lookAt(points[i]);
+                        }
                     }
                 );
 
@@ -131,7 +140,8 @@ export default class Car {
                         onComplete: () => {
                             /**
                              *  entrance 애니메이션 종료 후, 주차장 경로를 따라 이동하는 함수 호출
-                             *  */ 
+                             *  */
+                            this.mesh.lookAt(new Vector3(47.5, 0, 121));
                             this.movePath();
                         },
                         onUpdate: () => {
@@ -163,7 +173,7 @@ export default class Car {
                     new Vector3(quadraticPath[2].x, quadraticPath[2].y, quadraticPath[2].z)
                 );
 
-                const points: Vector3[] = quadrarticBezier.getPoints(20);
+                const points: Vector3[] = quadrarticBezier.getPoints(this.bezierPoints);
                 for(let i = 1; i < points.length - 1; i++) {
                     movePathTl.to(
                         this.mesh.position,
