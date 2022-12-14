@@ -1,5 +1,5 @@
 import { cpl3Scene, gltfLoader, gsap } from '../module/Basic';
-import { AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial, QuadraticBezierCurve3, Vector3, Vector} from 'three';
+import { MathUtils, AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial, QuadraticBezierCurve3, Vector3, Vector} from 'three';
 import carGlb from '../asset/resource/models/car.glb';
 
 // ParkingArea move path import
@@ -22,7 +22,7 @@ export default class Car {
     startZOffset: number = 20;
 
     constructor(cpl3Scene: Scene) {
-
+        
         gltfLoader.load(
             carGlb,
             (gltf) => {
@@ -37,9 +37,8 @@ export default class Car {
                 console.log(gltf.animations);
                 this.mesh = gltf.scene.children[0] as Mesh;
 
-                // temporary position
+                // entrance position
                 this.mesh.position.set(path[0].x, path[0].y, path[0].z - this.startZOffset);
-                // this.mesh.position.set(14 , 1.3, 84.5);
                 
                 // cast shadow true
                 this.mesh.castShadow = true;
@@ -56,20 +55,19 @@ export default class Car {
                 this.backwardAction = this.mixer.clipAction(gltf.animations[0]);
                 this.backwardAction.clampWhenFinished = true;
 
-                this.moveThroughPath();
+                // entrance animation start
+                this.moveEntrancePath();
 
             }
         );
     }
 
-    moveThroughPath() {
+    moveEntrancePath(): void {
         
         const entranceTl = gsap.timeline();
-        const movePathTl = gsap.timeline();
 
-        movePathTl.repeat(-1);
         // 주차장 진입 애니매이션 설정
-        movePathTl.to(
+        entranceTl.to(
             this.mesh.position,
             {
                 ease: 'none',
@@ -80,22 +78,80 @@ export default class Car {
                     const dist = this.startZOffset;
                     const basicDuration = this.stdDistance / this.stdSpeed;
 
-                    console.log('basicDuration: ', basicDuration);
-
                     const finalDuration = basicDuration * ( dist / this.stdDistance );
-                    console.log('finalDuration: ', finalDuration);
                     return finalDuration;
-
-                    // return 9;
-                })(),
-                onComplete: () => {
-                    
-                } // onComplete
+                })()
             }
+        ); // entranceTl.to
+
+        const quadraticPath = path[1].quadraticPath;
+        const quadrarticBezier = new QuadraticBezierCurve3(
+            new Vector3(quadraticPath[0].x, quadraticPath[0].y, quadraticPath[0].z),
+            new Vector3(quadraticPath[1].x, quadraticPath[1].y, quadraticPath[1].z),
+            new Vector3(quadraticPath[2].x, quadraticPath[2].y, quadraticPath[2].z)
         );
 
+        const points: Vector3[] = quadrarticBezier.getPoints(10);
+        for(let i = 1; i < points.length - 1; i++) {
+            if(i !== points.length - 2){
+
+                entranceTl.to(
+                    this.mesh.position,
+                    {
+                        ease: 'none',
+                        x: points[i].x,
+                        y: points[i].y,
+                        z: points[i].z,
+                        duration: (() => {
+                            const dist = points[i].distanceTo(points[i-1]);
+                            const basicDuration = this.stdDistance / this.stdSpeed;
+                            const duration = basicDuration * ( dist / this.stdDistance ) ;
+
+                            return duration;
+                        })(),
+                    }
+                );
+
+            } else {
+                entranceTl.to(
+                    this.mesh.position,
+                    {
+                        ease: 'none',
+                        x: points[i].x,
+                        y: points[i].y,
+                        z: points[i].z,
+                        duration: (() => {
+
+                            const dist = points[i].distanceTo(points[i-1]);
+                            const basicDuration = this.stdDistance / this.stdSpeed;
+                            const duration = basicDuration * ( dist / this.stdDistance ) ;
+
+                            return duration;
+                        })(),
+                        onComplete: () => {
+                            /**
+                             *  entrance 애니메이션 종료 후, 주차장 경로를 따라 이동하는 함수 호출
+                             *  */ 
+                            this.movePath();
+                        },
+                        onUpdate: () => {
+                            this.mesh.lookAt(points[i]);
+                        }
+                    }
+                );
+            }
+        }
+
+    } // moveEntrancePath
+
+    movePath(): void {
+        this.mesh.position.set(path[1].x, path[1].y, path[1].z);
+
+        // 주차장 경로 트래킹
+        const movePathTl = gsap.timeline();
+        movePathTl.repeat(-1);
         // using to for each event
-        for(let i = 1; i < path.length; i++) {
+        for(let i = 2; i < path.length; i++) {
 
             const eachPath = path[i];
 
@@ -107,14 +163,8 @@ export default class Car {
                     new Vector3(quadraticPath[2].x, quadraticPath[2].y, quadraticPath[2].z)
                 );
 
-                const points: Vector3[] = quadrarticBezier.getPoints(10);
+                const points: Vector3[] = quadrarticBezier.getPoints(20);
                 for(let i = 1; i < points.length - 1; i++) {
-                    const boxGeo = new BoxGeometry(0.1, 0.5, 0.1);
-                    const boxMat = new MeshLambertMaterial({color: 'white'});
-                    const boxMesh = new Mesh(boxGeo, boxMat);
-                    boxMesh.position.set(points[i].x, points[i].y, points[i].z);
-                    cpl3Scene.add(boxMesh);
-
                     movePathTl.to(
                         this.mesh.position,
                         {
@@ -131,12 +181,14 @@ export default class Car {
 
                                 return duration;
                             })(),
+                            onUpdate: () => {
+                                this.mesh.lookAt(points[i]);
+                            }
                         }
                     );
+                } // for
 
-                }
-
-            } else {
+            } else { 
                 movePathTl.to(
                     this.mesh.position,
                     {
@@ -153,14 +205,16 @@ export default class Car {
                         })(),
                         onUpdate: () => {
                             // console.log(this.mesh.position);
+                            this.mesh.lookAt(new Vector3(path[i].x, path[i].y, path[i].z));
                         }
                     }
                 );
             }
-
         } // for
-        console.log('movePathTl', movePathTl);
-        
-    } // moveThroughPath
+    } // movePath
+
+    direction(): void {
+
+    }
 
 }
