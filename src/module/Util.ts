@@ -1,8 +1,19 @@
 import { radToDeg } from 'three/src/math/MathUtils';
-import { Vector3 } from 'three';
+import { Vector3, BoxGeometry, MeshLambertMaterial, Mesh } from 'three';
+import { cpl3Scene } from './Basic';
 
 export const vec3fromObj = (cord: {x: number, y: number, z: number}) => {
     return new Vector3(cord.x, cord.y, cord.z);
+}
+
+export const drawBezierPath = (points: Vector3[]) => {
+    for(let vec3 of points) {
+        const boxGeo = new BoxGeometry(0.1, 0.5, 0.1);
+        const boxMat = new MeshLambertMaterial({color: 'white'});
+        const boxMesh = new Mesh(boxGeo, boxMat);
+        boxMesh.position.set(vec3.x, vec3.y, vec3.z);
+        cpl3Scene.add(boxMesh);
+    }
 }
 
 export const createVec3ObjArr = (vec3Arr: Vector3[]) :any[]  => {
