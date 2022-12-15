@@ -31,8 +31,8 @@ export const createVec3ObjArr = (vec3Arr: Vector3[]) :any[]  => {
 }
 
 export const createRoundPath = (
-    startDeg: number, pointsCnt: number, 
-    startCord: vec3Obj, 
+    startDeg: number, pointsCnt: number,
+    startCord: vec3Obj,
     endCord: vec3Obj
 ) : Object[] => {
     const gap = Math.PI / 2 / pointsCnt;
