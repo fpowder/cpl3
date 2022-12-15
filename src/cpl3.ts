@@ -148,6 +148,7 @@ createFromRanges();
 // Parking Area centers
 new Path()
     .setPaCenters()
+    .setPANumber()
     .setDotsOnPACenters()
     .setDotsOnPath();
 

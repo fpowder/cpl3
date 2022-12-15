@@ -1,4 +1,4 @@
-import { cpl3Scene, gltfLoader, gsap } from '../module/Basic';
+import { gltfLoader, gsap } from '../module/Basic';
 import { MathUtils, AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial, QuadraticBezierCurve3, Vector3, Vector} from 'three';
 import carGlb from '../asset/resource/models/car.glb';
 
@@ -23,6 +23,9 @@ export default class Car {
 
     startZOffset: number = 20;
 
+    parked: boolean = false;
+    wayout: boolean = false;
+
     constructor(cpl3Scene: Scene) {
         
         gltfLoader.load(
@@ -46,8 +49,8 @@ export default class Car {
                 this.mesh.castShadow = true;
                 cpl3Scene.add(this.mesh);
 
+                // car wheel animation set
                 this.mesh.animations = gltf.animations;
-
                 this.mixer = new AnimationMixer(this.mesh);
                 
                 this.forwardAction = this.mixer.clipAction(gltf.animations[1]);
@@ -149,7 +152,7 @@ export default class Car {
                         }
                     }
                 );
-            }
+            } // if else
         }
 
     } // moveEntrancePath
@@ -174,6 +177,10 @@ export default class Car {
                 );
 
                 const points: Vector3[] = quadrarticBezier.getPoints(this.bezierPoints);
+
+                // draw quadratic bezier points
+                drawBezierPath(points);
+
                 for(let i = 1; i < points.length - 1; i++) {
                     movePathTl.to(
                         this.mesh.position,
@@ -187,9 +194,8 @@ export default class Car {
                                 const dist = points[i].distanceTo(points[i-1]);
                                 const basicDuration = this.stdDistance / this.stdSpeed;
                                 const duration = basicDuration * ( dist / this.stdDistance ) ;
-                                console.log('duration: ', duration);
-
                                 return duration;
+
                             })(),
                             onUpdate: () => {
                                 this.mesh.lookAt(points[i]);

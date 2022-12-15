@@ -57,10 +57,10 @@ export default class Gate {
                 this.exitArrowMesh.rotateY(Math.PI);
 
                 cpl3Scene.add(this.entranceMesh);
-                // cpl3Scene.add(this.entranceArrowMesh);
+                cpl3Scene.add(this.entranceArrowMesh);
 
                 cpl3Scene.add(this.exitMesh);
-                // cpl3Scene.add(this.exitArrowMesh);
+                cpl3Scene.add(this.exitArrowMesh);
             }
         )
     }

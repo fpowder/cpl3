@@ -6,6 +6,7 @@
         "target": "es6",
         "jsx": "preserve",
         "allowJs": true,
+		"resolveJsonModule": true,
         "moduleResolution": "node",
         "importHelpers": true,
         "experimentalDecorators": true,

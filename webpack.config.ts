@@ -47,7 +47,7 @@ config = {
                 use: ['style-loader', 'css-loader'],
             },
             {
-                test: /\.(glb|gltf)$/i,
+                test: /\.(glb|gltf|json)$/i,
                 type: 'asset/resource',
             },
             {
