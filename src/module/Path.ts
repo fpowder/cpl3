@@ -36,7 +36,7 @@ export default class Path extends Cpl3Scene{
         return this;
     }
 
-    setPANumber(): Path {
+    async setPANumber(): Promise<Path> {
 
         // for(const k in parkingAreaCords) {
 
@@ -62,13 +62,42 @@ export default class Path extends Cpl3Scene{
         //     this.cpl3Scene.add(textMesh);
         // }
         
-        new FontLoader().load('../asset/resource/font/helvetiker_regular.typeface.json', (font: Font) => {
-            console.log('font', font);
-        })
+        // new FontLoader().load('/asset/resource/font/helvetiker_regular.typeface.json', (font: Font) => {
+        //     console.log('font', font);
+        // });
+
+        const font = await new FontLoader().loadAsync('/asset/resource/font/helvetiker_regular.typeface.json');
+        console.log('loaded font with sync', font);
+        for(const k in parkingAreaCords) {
+            console.log('k', k);
+            const letter: string = k;
+            const textGeo = new TextGeometry(
+                letter,
+                {
+                    font: font,
+                    size: 2,
+                    height: 0.2,
+                    curveSegments: 3,
+                    // bevelSize: 1,
+                    // bevelOffset: 0,
+                    // bevelSegments: 1
+                }
+            );
+            const textMat = new MeshLambertMaterial({color: 'white'});
+            const textMesh = new Mesh(textGeo, textMat);
+            
+            const eachCord = parkingAreaCords[k].cord;
+            const start = eachCord.start;
+            const vector = eachCord.vector;
+
+            textMesh.position.set(start[0] + vector[0] / 2 - 1.5, 0.3, start[1] + vector[1] / 2);
+
+            this.cpl3Scene.add(textMesh)
+        }
 
         return this;
     }
-
+    
     setDotsOnPACenters(): Path {
         const dotGeo = new CylinderGeometry(0.5, 0.5, 0.3, 20);
         const dotMat = new MeshLambertMaterial({color: '#96e0d8'});
