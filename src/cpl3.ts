@@ -148,9 +148,9 @@ createFromRanges();
 // Parking Area centers
 new Path()
     .setPaCenters()
-    .setPANumber()
-    .setDotsOnPACenters()
-    .setDotsOnPath();
+    // .setDotsOnPACenters()
+    .setDotsOnPath()
+    .setPANumber();
 
 // Helper
 const helper: Helper = new Helper(cpl3Scene);

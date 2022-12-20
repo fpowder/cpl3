@@ -15,7 +15,13 @@ config = {
     },
     devtool: 'inline-source-map',
     devServer: {
-        liveReload: true
+        liveReload: true,
+        proxy: {
+            '/asset/resource/font/**' : {
+                target: 'http://localhost:3000',
+                changeOrigin: true
+            }
+        }
     },
     // mode: 'development',
     plugins: [
