@@ -15,8 +15,6 @@ export default class Path extends Cpl3Scene{
     paCenters: {x: number, z: number}[] = new Array();
     path: { x?: number, y?: number, z?: number, quadraticPath?: any[]} [] = path;
     
-
-
     constructor() {
         super();
     }

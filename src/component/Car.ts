@@ -17,7 +17,7 @@ export default class Car {
     backwardAction: AnimationAction;
 
     stdDistance: number = 4;
-    stdSpeed: number = 12;
+    stdSpeed: number = 20;
 
     bezierPoints: number = 30;
 

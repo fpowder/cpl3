@@ -5,7 +5,8 @@
   "scripts": {
     "build": "webpack",
     "dev": "webpack serve",
-    "start": "webpack serve --progress"
+    "start": "webpack serve --progress",
+    "src-server": "nodemon ./resource-server.mjs"
   },
   "author": "",
   "license": "ISC",
