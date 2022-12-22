@@ -1,6 +1,6 @@
 import { CylinderGeometry, Mesh, MeshLambertMaterial } from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
-import { Font, FontLoader } from 'three/examples/jsm/loaders/FontLoader';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 
 import Cpl3Scene from '../component/Scene';
 
