@@ -148,8 +148,9 @@ createFromRanges();
 new Path()
     .setPaCenters()
     // .setDotsOnPACenters()
-    .setDotsOnPath()
-    .setPANumber();
+    // .setDotsOnPath()
+    .setPANumber()
+    .setPathNum();
 
 // Helper
 const helper: Helper = new Helper(cpl3Scene);

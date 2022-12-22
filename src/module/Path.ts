@@ -1,11 +1,8 @@
 import { CylinderGeometry, Mesh, MeshLambertMaterial } from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
+import { Font, FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 
 import Cpl3Scene from '../component/Scene';
-
-// import font from '../asset/resource/font/helvetiker_regular.typeface.json';
-// import font from 'three/examples/fonts/helvetiker_regular.typeface.json';
 
 import parkingAreaCords from '../config/parkingAreaCords';
 import path from '../config/path';
@@ -14,9 +11,28 @@ export default class Path extends Cpl3Scene{
 
     paCenters: {x: number, z: number}[] = new Array();
     path: { x?: number, y?: number, z?: number, quadraticPath?: any[]} [] = path;
-    
+
+    paStatus: {} = {};
+
+    font: Promise<Font> = new FontLoader().loadAsync('/asset/resource/font/helvetiker_regular.typeface.json');
+
     constructor() {
         super();
+    }
+
+    initPaStatus(): Path {
+
+        for(const eachPath of path) {
+            if(eachPath.parkTo) {
+                const parkNum = eachPath.parkTo.toString();
+                this.paStatus[parkNum] = {
+                    occupied: false,
+
+                }
+            } 
+        }
+
+        return this;
     }
 
     setPaCenters(): Path {
@@ -34,7 +50,7 @@ export default class Path extends Cpl3Scene{
         return this;
     }
 
-    async setPANumber(): Promise<Path> {
+    setPANumber(): Path {
 
         // for(const k in parkingAreaCords) {
 
@@ -64,35 +80,63 @@ export default class Path extends Cpl3Scene{
         //     console.log('font', font);
         // });
 
-        const font = await new FontLoader().loadAsync('/asset/resource/font/helvetiker_regular.typeface.json');
-        console.log('loaded font with sync', font);
-        for(const k in parkingAreaCords) {
-            console.log('k', k);
-            const letter: string = k;
-            const textGeo = new TextGeometry(
-                letter,
-                {
-                    font: font,
-                    size: 2,
-                    height: 0.2,
-                    curveSegments: 3,
-                    // bevelSize: 1,
-                    // bevelOffset: 0,
-                    // bevelSegments: 1
-                }
-            );
-            const textMat = new MeshLambertMaterial({color: 'white'});
-            const textMesh = new Mesh(textGeo, textMat);
-            
-            const eachCord = parkingAreaCords[k].cord;
-            const start = eachCord.start;
-            const vector = eachCord.vector;
+        this.font.then(font => {
+            // console.log('loaded font with sync', font);
+            for(const k in parkingAreaCords) {
+                // console.log('k', k);
+                const letter: string = k;
+                const textGeo = new TextGeometry(
+                    letter,
+                    {
+                        font: font,
+                        size: 2,
+                        height: 0.2,
+                        curveSegments: 3,
+                        // bevelSize: 1,
+                        // bevelOffset: 0,
+                        // bevelSegments: 1
+                    }
+                );
+                const textMat = new MeshLambertMaterial({color: 'white'});
+                const textMesh = new Mesh(textGeo, textMat);
+                
+                const eachCord = parkingAreaCords[k].cord;
+                const start = eachCord.start;
+                const vector = eachCord.vector;
 
-            textMesh.position.set(start[0] + vector[0] / 2 - 1.5, 0.3, start[1] + vector[1] / 2);
+                textMesh.position.set(start[0] + vector[0] / 2 - 1.5, 0.3, start[1] + vector[1] / 2);
 
-            this.cpl3Scene.add(textMesh)
-        }
+                this.cpl3Scene.add(textMesh)
+            }
+        });
 
+        return this;
+    }
+
+    setPathNum(): Path {
+        this.font.then(font => {
+            for(let i = 0; i < this.path.length; i++) {
+                const letter: string = i.toString();
+                const textGeo = new TextGeometry(
+                    letter,
+                    {
+                        font: font,
+                        size: 2,
+                        height: 0.2,
+                        curveSegments: 3,
+                        // bevelSize: 1,
+                        // bevelOffset: 0,
+                        // bevelSegments: 1
+                    }
+                );
+                const textMat = new MeshLambertMaterial({color: 'white'});
+                const textMesh = new Mesh(textGeo, textMat);
+                
+                const eachPath = path[i];
+                textMesh.position.set(eachPath.x, eachPath.y, eachPath.z);
+                this.cpl3Scene.add(textMesh);
+            }
+        });
         return this;
     }
     
