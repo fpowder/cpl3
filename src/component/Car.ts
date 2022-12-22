@@ -20,8 +20,10 @@ export default class Car {
     stdSpeed: number = 20;
 
     bezierPoints: number = 30;
-
     startZOffset: number = 20;
+
+    act: string = 'entrance'; // entrance, moving, parking, exit
+    direction: string; // -x, +x, -z, +z
 
     parked: boolean = false;
     wayout: boolean = false;
@@ -90,70 +92,13 @@ export default class Car {
         ); // entranceTl.to
 
         const quadraticPath = path[1].quadraticPath;
-        const quadrarticBezier = new QuadraticBezierCurve3(
-            new Vector3(quadraticPath[0].x, quadraticPath[0].y, quadraticPath[0].z),
-            new Vector3(quadraticPath[1].x, quadraticPath[1].y, quadraticPath[1].z),
-            new Vector3(quadraticPath[2].x, quadraticPath[2].y, quadraticPath[2].z)
-        );
-        
-        const points: Vector3[] = quadrarticBezier.getPoints(this.bezierPoints);
-
-        // draw quadratic bezier points
-        drawBezierPath(points);
-
-        for(let i = 1; i < points.length - 1; i++) {
-            if(i !== points.length - 2){
-                
-                entranceTl.to(
-                    this.mesh.position,
-                    {
-                        ease: 'none',
-                        x: points[i].x,
-                        y: points[i].y,
-                        z: points[i].z,
-                        duration: (() => {
-                            const dist = points[i].distanceTo(points[i-1]);
-                            const basicDuration = this.stdDistance / this.stdSpeed;
-                            const duration = basicDuration * ( dist / this.stdDistance ) ;
-
-                            return duration;
-                        })(),
-                        onUpdate: () => {
-                            this.mesh.lookAt(points[i]);
-                        }
-                    }
-                );
-
-            } else {
-                entranceTl.to(
-                    this.mesh.position,
-                    {
-                        ease: 'none',
-                        x: points[i].x,
-                        y: points[i].y,
-                        z: points[i].z,
-                        duration: (() => {
-
-                            const dist = points[i].distanceTo(points[i-1]);
-                            const basicDuration = this.stdDistance / this.stdSpeed;
-                            const duration = basicDuration * ( dist / this.stdDistance ) ;
-
-                            return duration;
-                        })(),
-                        onComplete: () => {
-                            /**
-                             *  entrance 애니메이션 종료 후, 주차장 경로를 따라 이동하는 함수 호출
-                             *  */
-                            this.mesh.lookAt(new Vector3(47.5, 0, 121));
-                            this.movePath();
-                        },
-                        onUpdate: () => {
-                            this.mesh.lookAt(points[i]);
-                        }
-                    }
-                );
-            } // if else
-        }
+        this.bezierPath(entranceTl, quadraticPath, () => {
+            /**
+             *  entrance 애니메이션 종료 후, 주차장 경로를 따라 이동하는 함수 호출
+             *  */
+            this.mesh.lookAt(new Vector3(47.5, 0, 121));
+            this.movePath();
+        });
 
     } // moveEntrancePath
 
@@ -169,40 +114,7 @@ export default class Car {
             const eachPath = path[i];
 
             if(eachPath.quadraticPath) {
-                const quadraticPath = eachPath.quadraticPath;
-                const quadrarticBezier = new QuadraticBezierCurve3(
-                    new Vector3(quadraticPath[0].x, quadraticPath[0].y, quadraticPath[0].z),
-                    new Vector3(quadraticPath[1].x, quadraticPath[1].y, quadraticPath[1].z),
-                    new Vector3(quadraticPath[2].x, quadraticPath[2].y, quadraticPath[2].z)
-                );
-
-                const points: Vector3[] = quadrarticBezier.getPoints(this.bezierPoints);
-
-                // draw quadratic bezier points
-                drawBezierPath(points);
-
-                for(let i = 1; i < points.length - 1; i++) {
-                    movePathTl.to(
-                        this.mesh.position,
-                        {
-                            ease: 'none',
-                            x: points[i].x,
-                            y: points[i].y,
-                            z: points[i].z,
-                            duration: (() => {
-
-                                const dist = points[i].distanceTo(points[i-1]);
-                                const basicDuration = this.stdDistance / this.stdSpeed;
-                                const duration = basicDuration * ( dist / this.stdDistance ) ;
-                                return duration;
-
-                            })(),
-                            onUpdate: () => {
-                                this.mesh.lookAt(points[i]);
-                            }
-                        }
-                    );
-                } // for
+                this.bezierPath(movePathTl, eachPath.quadraticPath);
 
             } else { 
                 movePathTl.to(
@@ -229,7 +141,70 @@ export default class Car {
         } // for
     } // movePath
 
-    direction(): void {
+    bezierPath(
+        timeline: gsap.core.Timeline, 
+        quadraticPath: {x: number, y: number, z: number}[], 
+        onComplete?: gsap.Callback
+    ): void {
+
+        const quadrarticBezier = new QuadraticBezierCurve3(
+            new Vector3(quadraticPath[0].x, quadraticPath[0].y, quadraticPath[0].z),
+            new Vector3(quadraticPath[1].x, quadraticPath[1].y, quadraticPath[1].z),
+            new Vector3(quadraticPath[2].x, quadraticPath[2].y, quadraticPath[2].z)
+        );
+        
+        const points: Vector3[] = quadrarticBezier.getPoints(this.bezierPoints);
+
+        // draw quadratic bezier points
+        drawBezierPath(points);
+
+        for(let i = 1; i < points.length - 1; i++) {
+            if(i !== points.length - 2){
+                
+                timeline.to(
+                    this.mesh.position,
+                    {
+                        ease: 'none',
+                        x: points[i].x,
+                        y: points[i].y,
+                        z: points[i].z,
+                        duration: (() => {
+                            const dist = points[i].distanceTo(points[i-1]);
+                            const basicDuration = this.stdDistance / this.stdSpeed;
+                            const duration = basicDuration * ( dist / this.stdDistance ) ;
+
+                            return duration;
+                        })(),
+                        onUpdate: () => {
+                            this.mesh.lookAt(points[i]);
+                        }
+                    }
+                );
+
+            } else {
+                timeline.to(
+                    this.mesh.position,
+                    {
+                        ease: 'none',
+                        x: points[i].x,
+                        y: points[i].y,
+                        z: points[i].z,
+                        duration: (() => {
+
+                            const dist = points[i].distanceTo(points[i-1]);
+                            const basicDuration = this.stdDistance / this.stdSpeed;
+                            const duration = basicDuration * ( dist / this.stdDistance ) ;
+
+                            return duration;
+                        })(),
+                        onComplete: onComplete,
+                        onUpdate: () => {
+                            this.mesh.lookAt(points[i]);
+                        }
+                    }
+                );
+            } // if else
+        }
 
     }
 

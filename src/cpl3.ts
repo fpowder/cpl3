@@ -25,7 +25,6 @@ import Car from './component/Car';
 import Gate from './component/Gate';
 import colors from './config/colors';
 import './css/cpl3.css';
-import { nextTick } from 'process';
 
 // Renderer
 const canvas: Element = document.querySelector('#cpl3');
