@@ -165,7 +165,9 @@ const helper: Helper = new Helper(cpl3Scene);
 // cpl3Scene.add(testMesh);
 
 // sample car from glb
-const car = new Car(cpl3Scene);
+const car = new Car(cpl3Scene, 10);
+const car2 = new Car(cpl3Scene, 20);
+
 // sample gate from glb
 const gate = new Gate(cpl3Scene);
 
