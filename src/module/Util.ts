@@ -8,7 +8,7 @@ export const vec3fromObj = (cord: {x: number, y: number, z: number}) => {
 
 export const drawBezierPath = (points: Vector3[]) => {
     for(let vec3 of points) {
-        const boxGeo = new BoxGeometry(0.1, 0.5, 0.1);
+        const boxGeo = new BoxGeometry(0.05, 0.5, 0.05);
         const boxMat = new MeshLambertMaterial({color: 'white'});
         const boxMesh = new Mesh(boxGeo, boxMat);
         boxMesh.position.set(vec3.x, vec3.y, vec3.z);
