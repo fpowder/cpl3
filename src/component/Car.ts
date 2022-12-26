@@ -260,7 +260,7 @@ export default class Car {
                 if(item.object.parent?.parent?.name === 'car') {
                     console.log('car ray ', true);
                     break;
-                };
+                }
                 // this.frontSensor.splice(0, 1);
                 
             }
