@@ -31,7 +31,7 @@ export default class Floor {
 
         // 그림자 설정
         this.mesh.receiveShadow = true;
-
+        
         cpl3Scene.add(this.mesh);
         
     }

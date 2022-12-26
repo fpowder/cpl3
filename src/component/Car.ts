@@ -1,5 +1,5 @@
-import { cpl3Scene, gltfLoader, gsap, raycaster } from '../module/Basic';
-import { MathUtils, AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial, QuadraticBezierCurve3, Vector3, Vector, LineBasicMaterial, Line, BufferGeometry, Object3D} from 'three';
+import { cpl3Scene, gltfLoader, gsap } from '../module/Basic';
+import { MathUtils, Ray, AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial, QuadraticBezierCurve3, Vector3, Vector, LineBasicMaterial, Line, BufferGeometry, Object3D, ArrowHelper, Raycaster} from 'three';
 import carGlb from '../asset/resource/models/car.glb';
 
 // ParkingArea move path import
@@ -8,7 +8,7 @@ import path from '../config/path';
 import { vec3fromObj, drawBezierPath } from '../module/Util';
 export default class Car {
 
-    mesh: any;
+    mesh: Mesh;
     mixer: AnimationMixer;
 
     moving: boolean;
@@ -28,10 +28,13 @@ export default class Car {
     parked: boolean = false;
     wayout: boolean = false;
 
-    frontSensor: Line;
-    frontSensorHeight: number = 2;
-    frontSensorLength: number = 7;
+    timeline: gsap.core.Timeline = gsap.timeline();
+    nextPath: Vector3 = new Vector3(0, 0, 0);
 
+    frontSensor: Raycaster = new Raycaster();
+    frontSensorHeight: number = 1.5;
+    frontSensorLength: number = 7;
+    
     constructor(cpl3Scene: Scene, stdSpeed: number) {
         this.stdSpeed = stdSpeed;
         gltfLoader.load(
@@ -44,9 +47,9 @@ export default class Car {
                         child.castShadow = true;
                     }
                 });
-                console.log('gltf.scene.children : ',gltf.scene.children[0]);
+                console.log('gltf.scene.children[0] : ',gltf.scene.children[0]);
                 // console.log(gltf.animations);
-                this.mesh = gltf.scene.children[0];
+                this.mesh = gltf.scene.children[0] as Mesh;
                 this.mesh.name = 'car';
                 // console.log('this.mesh', this.mesh);
                 // entrance position
@@ -67,23 +70,13 @@ export default class Car {
                 this.backwardAction = this.mixer.clipAction(gltf.animations[0]);
                 this.backwardAction.clampWhenFinished = true;
 
-                // set frontSensor
-                const lineMat = new LineBasicMaterial({ color: 'yellow' });
-                const points = [
-                    new Vector3(0, this.frontSensorHeight, 0),
-                    new Vector3(0, this.frontSensorHeight, this.frontSensorLength)
-                ];
-
-                const lineGeo = new BufferGeometry().setFromPoints(points);
-                this.frontSensor = new Line(lineGeo, lineMat);
-                this.frontSensor.position.set(path[0].x, path[0].y, path[0].z - this.startZOffset);
-                cpl3Scene.add(this.frontSensor);
-
                 // entrance animation start
                 this.moveEntrancePath();
-
+                
             }
         );
+
+        
     }
 
     moveEntrancePath(): void {
@@ -93,7 +86,7 @@ export default class Car {
         // 주차장 진입 애니매이션 설정
         entranceTl.to(
             // this.mesh.position,
-            [this.mesh.position, this.frontSensor.position],
+            this.mesh.position,
             {
                 ease: 'none',
                 x: path[0].x,
@@ -113,14 +106,20 @@ export default class Car {
         ); // entranceTl.to
 
         const quadraticPath = path[1].quadraticPath;
-        this.bezierPath(entranceTl, quadraticPath, [this.mesh.position, this.frontSensor.position], () => {
-            /**
-             *  entrance 애니메이션 종료 후, 주차장 경로를 따라 이동하는 함수 호출
-             *  */
-            this.mesh.lookAt(new Vector3(47.5, 0, 121));
-            this.frontSensor.lookAt(new Vector3(47.5, 0, 121));
-            this.movePath();
-        });
+        this.bezierPath(
+            entranceTl, 
+            quadraticPath, 
+            this.mesh.position, 
+            () => {
+                /**
+                 *  entrance 애니메이션 종료 후, 주차장 경로를 따라 이동하는 함수 호출
+                 *  */
+                this.mesh.lookAt(new Vector3(47.5, 0, 121));
+                this.movePath();
+            }
+        );
+
+        // this.timeline.add(entranceTl);
 
     } // moveEntrancePath
 
@@ -136,11 +135,11 @@ export default class Car {
             const eachPath = path[i];
 
             if(eachPath.quadraticPath) {
-                this.bezierPath(movePathTl, eachPath.quadraticPath, [this.mesh.position, this.frontSensor.position]);
+                this.bezierPath(movePathTl, eachPath.quadraticPath, this.mesh.position);
 
             } else { 
                 movePathTl.to(
-                    [this.mesh.position, this.frontSensor.position],
+                    this.mesh.position,
                     {
                         ease: 'none',
                         x: eachPath.x,
@@ -163,12 +162,15 @@ export default class Car {
                 );
             }
         } // for
+
+        // this.timeline.add(movePathTl);
+        // this.timeline.eventCallback('onUpdate', this.sensorRay, [this.nextPath]);
     } // movePath
 
     bezierPath(
         timeline: gsap.core.Timeline, 
         quadraticPath: {x: number, y: number, z: number}[],
-        positions: Vector3[],
+        positions: Vector3,
         onComplete?: gsap.Callback,
     ): void {
 
@@ -196,7 +198,7 @@ export default class Car {
                         duration: (() => {
                             const dist = points[i].distanceTo(points[i-1]);
                             const basicDuration = this.stdDistance / this.stdSpeed;
-                            const duration = basicDuration * ( dist / this.stdDistance ) ;
+                            const duration = basicDuration * ( dist / this.stdDistance );
 
                             return duration;
                         })(),
@@ -230,29 +232,40 @@ export default class Car {
                         }
                     }
                 );
-            } // if else
+            } // if else    
         }
 
     }
 
-    sensorRay(direction: Vector3) {
+    sensorRay(direction: Vector3): any {
 
-        this.frontSensor.lookAt(direction);
-        // console.log('cpl3Scene.children', cpl3Scene.children);
-        const pos: Vector3 = this.mesh.position;
-        const origin: Vector3 = new Vector3(pos.x, pos.y + this.frontSensorHeight, pos.z);
-        const rayDirect: Vector3 = new Vector3(direction.x, direction.y + this.frontSensorHeight, direction.z);
+        if(this.mesh && direction.distanceTo(this.mesh.position) > 0.1) {
+           // this.frontSensor.lookAt(direction);
+            const pos: Vector3 = this.mesh.position;
+            
+            // const origin: Vector3 = new Vector3(pos.x, pos.y + this.frontSensorHeight, pos.z);
+            // const rayDirect: Vector3 = new Vector3(direction.x, direction.y + this.frontSensorHeight, direction.z);
+            const origin: Vector3 = new Vector3(pos.x, this.frontSensorHeight, pos.z);
+            const rayDirect: Vector3 = new Vector3(direction.x - pos.x, 0, direction.z - pos.z);
+            rayDirect.normalize();
+            this.frontSensor.set(origin, rayDirect);
+            
+            cpl3Scene.add(
+                new ArrowHelper(this.frontSensor.ray.direction, this.frontSensor.ray.origin, 10, 0x00ff00)
+            );
 
-        raycaster.set(origin, rayDirect);
-        const intersects = raycaster.intersectObjects(cpl3Scene.children);
-        // console.log('intersects', intersects);
-        for(const item of intersects) {
-            // console.log(item); 
-            // console.log('item type', item.object.type);
-            // console.log('item name', item.object.name);
-
-            if(item.object.name === 'car') console.log('car ray ', true);
+            const intersects = this.frontSensor.intersectObjects(cpl3Scene.children);
+            for(const item of intersects) {
+                // console.log(item);
+                if(item.object.parent?.parent?.name === 'car') {
+                    console.log('car ray ', true);
+                    break;
+                };
+                // this.frontSensor.splice(0, 1);
+                
+            }
         }
+        
     }
 
 }

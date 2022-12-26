@@ -25,6 +25,7 @@ import Car from './component/Car';
 import Gate from './component/Gate';
 import colors from './config/colors';
 import './css/cpl3.css';
+import { ArrowHelper, Raycaster, Vector3 } from 'three';
 
 // Renderer
 const canvas: Element = document.querySelector('#cpl3');
@@ -165,8 +166,8 @@ const helper: Helper = new Helper(cpl3Scene);
 // cpl3Scene.add(testMesh);
 
 // sample car from glb
-const car = new Car(cpl3Scene, 10);
-const car2 = new Car(cpl3Scene, 20);
+const car = new Car(cpl3Scene, 15);
+const car2 = new Car(cpl3Scene, 40);
 
 // sample gate from glb
 const gate = new Gate(cpl3Scene);
@@ -212,7 +213,6 @@ window.addEventListener('resize', setSize);
 // }
 // draw();
 
-
 // draw (gsap ticker version);
 const clock: THREE.Clock = new THREE.Clock();
 const render = () => {
@@ -234,8 +234,8 @@ const render = () => {
     // renderer.render(cpl3Scene, camera);
     renderer.setAnimationLoop(() => {
         if(car.mixer) car.mixer.update(delta);
-        
     });
+
     renderer.render(cpl3Scene, camera);
     spotLight1Helper.update();
     spotLight2Helper.update();
