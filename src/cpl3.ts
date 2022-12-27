@@ -244,10 +244,10 @@ const render = () => {
 
     sideSpot1Helper.update();
     sideSpot2Helper.update();
-
+    
+    car.sensorRay();
+    car2.sensorRay();
 }
 
 gsap.ticker.add(render);
 gsap.ticker.fps(120);
-
-
