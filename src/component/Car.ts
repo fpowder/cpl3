@@ -1,5 +1,5 @@
 import { cpl3Scene, gltfLoader, gsap } from '../module/Basic';
-import { MathUtils, Ray, AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial, QuadraticBezierCurve3, Vector3, Vector, LineBasicMaterial, Line, BufferGeometry, Object3D, ArrowHelper, Raycaster, Box3, IcosahedronGeometry} from 'three';
+import { AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial, QuadraticBezierCurve3, Vector3, Raycaster, Box3, IcosahedronGeometry} from 'three';
 import carGlb from '../asset/resource/models/car.glb';
 
 // ParkingArea move path import
@@ -94,7 +94,9 @@ export default class Car {
     }
 
     moveEntrancePath(): void {
+        
         this.timeline.add(this.entranceTl);
+
         // 주차장 진입 애니매이션 설정
         this.entranceTl.to(
             // this.mesh.position,
@@ -113,9 +115,6 @@ export default class Car {
                 })(),
                 onUpdate: (() => {
                     // this.sensorRay(new Vector3(path[0].x, path[0].y, path[0].z));
-                }),
-                onStart: (() => {
-                    
                 })
             }
         ); // entranceTl.to
@@ -137,6 +136,7 @@ export default class Car {
     } // moveEntrancePath
 
     movePath(): void {
+
         this.timeline.add(this.movePathTl);
 
         this.mesh.position.set(path[1].x, path[1].y, path[1].z);
@@ -170,15 +170,12 @@ export default class Car {
                             // console.log(this.mesh.position);
                             const nextPath = new Vector3(path[i].x, path[i].y, path[i].z);
                             this.mesh.lookAt(nextPath);
-                            // this.sensorRay(nextPath);
-                            // this.nextPath = nextPath;
                         }
                     }
                 );
             }
         } // for
 
-        // this.timeline.eventCallback('onUpdate', this.sensorRay, [this.nextPath]);
     } // movePath
 
     bezierPath(
@@ -213,12 +210,11 @@ export default class Car {
                             const dist = points[i].distanceTo(points[i-1]);
                             const basicDuration = this.stdDistance / this.stdSpeed;
                             const duration = basicDuration * ( dist / this.stdDistance );
+
                             return duration;
                         })(),
                         onUpdate: () => {
                             this.mesh.lookAt(points[i]);
-                            // this.sensorRay(points[i]);
-                            // this.nextPath = points[i];
                         }
                     }
                 );
@@ -242,8 +238,6 @@ export default class Car {
                         onComplete: onComplete,
                         onUpdate: () => {
                             this.mesh.lookAt(points[i]);
-                            // this.sensorRay(points[i]);
-                            // this.nextPath = points[i];
                         }
                     }
                 );
@@ -252,55 +246,9 @@ export default class Car {
 
     }
 
-    /* sensorRay(direction: Vector3): any {
-
-        if(this.mesh && direction.distanceTo(this.mesh.position) > 0.1) {
-           // this.frontSensor.lookAt(direction);
-           
-            const sensorPos: Vector3 = this.frontSensor.getWorldPosition(new Vector3());
-            
-            // raycasting 방향은 현재 차량 mesh position과 다음 경로의 position간 vector를 계산해야댐
-            const carPos: Vector3 = this.mesh.position;
-            const rayDirect: Vector3 = new Vector3(direction.x - carPos.x, 0, direction.z - carPos.z);
-            rayDirect.normalize();
-
-            // frontSensor와 계산된 vector로 raycasting
-            this.frontSensorRay.set(sensorPos, rayDirect);
-            
-            // cpl3Scene.add(
-            //     new ArrowHelper(this.frontSensorRay.ray.direction, this.frontSensorRay.ray.origin, 10, 0x00ff00)
-            // );
-
-            const intersects = this.frontSensorRay.intersectObjects(cpl3Scene.children);
-            for(const item of intersects) {
-
-                
-                if(item.object.parent?.parent?.name === 'car') console.log(item.distance);
-
-                if(
-                    item.object.parent?.parent?.name === 'car' 
-                    &&
-                    item.distance < 3 
-                ) {
-                    this.timeline.pause();
-                    console.log('car ray ', true);
-                    
-                } else {
-                    this.timeline.resume();
-                }
-                break;
-                
-            }
-        }
-        
-    } */
-
     sensorRay(): any {
-        // this.frontSensor.lookAt(direction);
 
         const sensorPos: Vector3 = this.frontSensor.getWorldPosition(new Vector3());
-
-        // frontSensor와 계산된 vector로 raycasting
         const direct = this.frontSensor.getWorldDirection(new Vector3());
         direct.normalize()
         this.frontSensorRay.set(sensorPos, direct);
@@ -312,20 +260,20 @@ export default class Car {
         const intersects = this.frontSensorRay.intersectObjects(cpl3Scene.children);
         for(const item of intersects) {
             
-            // if(item.object.parent?.parent?.name === 'car') console.log(item.distance);
+            if(item.object.parent?.parent?.name === 'car') console.log(item.distance);
 
             if(
                 item.object.parent?.parent?.name === 'car' 
                 &&
-                item.distance < 3 
+                item.distance < 3
             ) {
                 this.timeline.pause();
-                // console.log('car ray ', true);
+                console.log('car ray ', true);
                 break;
                 
             } else {
                 this.timeline.resume();
-                // console.log('car ray ', false);
+                console.log('car ray ', false);
                 break;
             }
         }
