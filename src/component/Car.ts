@@ -51,9 +51,6 @@ export default class Car {
             carGlb,
             (gltf) => {
 
-                // timeline integration
-                this.timeline.add(this.entranceTl).add(this.movePathTl);
-
                 gltf.scene.traverse(child => {
                     console.log(child);
                     
@@ -97,7 +94,7 @@ export default class Car {
     }
 
     moveEntrancePath(): void {
-        
+        this.timeline.add(this.entranceTl);
         // 주차장 진입 애니매이션 설정
         this.entranceTl.to(
             // this.mesh.position,
@@ -116,6 +113,9 @@ export default class Car {
                 })(),
                 onUpdate: (() => {
                     // this.sensorRay(new Vector3(path[0].x, path[0].y, path[0].z));
+                }),
+                onStart: (() => {
+                    
                 })
             }
         ); // entranceTl.to
@@ -137,6 +137,8 @@ export default class Car {
     } // moveEntrancePath
 
     movePath(): void {
+        this.timeline.add(this.movePathTl);
+
         this.mesh.position.set(path[1].x, path[1].y, path[1].z);
 
         // 주차장 경로 트래킹
@@ -211,7 +213,6 @@ export default class Car {
                             const dist = points[i].distanceTo(points[i-1]);
                             const basicDuration = this.stdDistance / this.stdSpeed;
                             const duration = basicDuration * ( dist / this.stdDistance );
-
                             return duration;
                         })(),
                         onUpdate: () => {
@@ -311,7 +312,7 @@ export default class Car {
         const intersects = this.frontSensorRay.intersectObjects(cpl3Scene.children);
         for(const item of intersects) {
             
-            if(item.object.parent?.parent?.name === 'car') console.log(item.distance);
+            // if(item.object.parent?.parent?.name === 'car') console.log(item.distance);
 
             if(
                 item.object.parent?.parent?.name === 'car' 
@@ -319,12 +320,12 @@ export default class Car {
                 item.distance < 3 
             ) {
                 this.timeline.pause();
-                console.log('car ray ', true);
+                // console.log('car ray ', true);
                 break;
                 
             } else {
                 this.timeline.resume();
-                console.log('car ray ', false);
+                // console.log('car ray ', false);
                 break;
             }
         }
