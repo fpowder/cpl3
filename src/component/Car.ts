@@ -138,6 +138,7 @@ export default class Car {
     movePath(): void {
 
         this.timeline.add(this.movePathTl);
+        this.act = 'moving';
 
         this.mesh.position.set(path[1].x, path[1].y, path[1].z);
 
@@ -260,7 +261,7 @@ export default class Car {
         const intersects = this.frontSensorRay.intersectObjects(cpl3Scene.children);
         for(const item of intersects) {
             
-            if(item.object.parent?.parent?.name === 'car') console.log(item.distance);
+            if(item.object.parent?.parent?.name === 'car') console.log('distance with front car', item.distance);
 
             if(
                 item.object.parent?.parent?.name === 'car' 
@@ -268,12 +269,12 @@ export default class Car {
                 item.distance < 3
             ) {
                 this.timeline.pause();
-                console.log('car ray ', true);
+                // console.log('car ray ', true);
                 break;
                 
             } else {
                 this.timeline.resume();
-                console.log('car ray ', false);
+                // console.log('car ray ', false);
                 break;
             }
         }
