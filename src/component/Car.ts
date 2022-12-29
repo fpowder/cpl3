@@ -31,7 +31,13 @@ export default class Car {
     entranceTl: gsap.core.Timeline = gsap.timeline();
     movePathTl: gsap.core.Timeline = gsap.timeline();
 
-    timeline: gsap.core.Timeline = gsap.timeline();
+    timeline: gsap.core.Timeline = (() => {
+        const timeline = gsap.timeline();
+        timeline.eventCallback('onUpdate', () => {
+            
+        });
+        return timeline;
+    })();
     // nextPath: Vector3;
 
     frontSensor: Mesh = new Mesh(
@@ -45,6 +51,9 @@ export default class Car {
     frontSensorRay: Raycaster = new Raycaster();
     frontSensorHeight: number = 1.5;
     
+    progress: number = 0;
+    curProgress: number = 0;
+
     constructor(cpl3Scene: Scene, stdSpeed: number) {
         this.stdSpeed = stdSpeed;
         gltfLoader.load(
@@ -61,7 +70,6 @@ export default class Car {
                 console.log('gltf.scene.children[0] : ',gltf.scene.children[0]);
                 // console.log(gltf.animations);
                 this.mesh = gltf.scene.children[0] as Mesh;
-
                 this.mesh.name = 'car';
 
                 // entrance position
@@ -251,7 +259,7 @@ export default class Car {
 
         const sensorPos: Vector3 = this.frontSensor.getWorldPosition(new Vector3());
         const direct = this.frontSensor.getWorldDirection(new Vector3());
-        direct.normalize()
+        direct.normalize();
         this.frontSensorRay.set(sensorPos, direct);
 
         // cpl3Scene.add(
@@ -266,14 +274,13 @@ export default class Car {
             if(
                 item.object.parent?.parent?.name === 'car' 
                 &&
-                item.distance < 3
+                item.distance < 5 
             ) {
                 this.timeline.pause();
                 // console.log('car ray ', true);
                 break;
-                
             } else {
-                this.timeline.resume();
+                this.timeline.paused(false);
                 // console.log('car ray ', false);
                 break;
             }
