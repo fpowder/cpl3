@@ -1,4 +1,4 @@
-import { Scene, Raycaster } from 'three';
+import { Scene, Raycaster, Clock } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { gsap as GSAP } from 'gsap';
 
@@ -7,6 +7,7 @@ import { gsap as GSAP } from 'gsap';
 export const cpl3Scene: Scene = new Scene();
 export const gltfLoader: GLTFLoader = new GLTFLoader();
 export const raycaster: Raycaster = new Raycaster();
+export const clock: Clock = new Clock();
 
 // export const webGLRenderer: WebGLRenderer = new WebGLRenderer();
 // export const mixer: undefined | AnimationMixer = undefined;
