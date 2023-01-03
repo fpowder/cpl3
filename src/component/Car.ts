@@ -1,5 +1,5 @@
-import { cpl3Scene, gltfLoader, gsap } from '../module/Basic';
-import { AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial, QuadraticBezierCurve3, Vector3, Raycaster, Box3, IcosahedronGeometry} from 'three';
+import { cpl3Scene, gltfLoader, gsap, clock } from '../module/Basic';
+import { AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial, QuadraticBezierCurve3, Vector3, Raycaster } from 'three';
 import carGlb from '../asset/resource/models/car.glb';
 
 // ParkingArea move path import
@@ -51,8 +51,7 @@ export default class Car {
     frontSensorRay: Raycaster = new Raycaster();
     frontSensorHeight: number = 1.5;
     
-    progress: number = 0;
-    curProgress: number = 0;
+    stoppedTime: number;
 
     constructor(cpl3Scene: Scene, stdSpeed: number) {
         this.stdSpeed = stdSpeed;
@@ -138,6 +137,7 @@ export default class Car {
                  *  */
                 this.mesh.lookAt(new Vector3(47.5, 0, 121));
                 this.movePath();
+                // this.entranceTl.progress(1).reverse();
             }
         );
 
@@ -273,15 +273,17 @@ export default class Car {
 
             if(
                 item.object.parent?.parent?.name === 'car' 
-                &&
-                item.distance < 5 
+                    &&
+                item.distance < 5
             ) {
-                this.timeline.pause();
+                console.log('distance lower than 5');
                 // console.log('car ray ', true);
+                // this.stopped = true;
+                this.stoppedTime = clock.getElapsedTime();
+                this.timeline.pause();
                 break;
-            } else {
-                this.timeline.paused(false);
-                // console.log('car ray ', false);
+            } else if(clock.getElapsedTime() - this.stoppedTime > 1){    
+                this.timeline.resume();
                 break;
             }
         }

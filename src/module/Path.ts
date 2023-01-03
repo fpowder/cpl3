@@ -13,7 +13,7 @@ export default class Path extends Cpl3Scene{
     path: { x?: number, y?: number, z?: number, quadraticPath?: any[]} [] = path;
 
     paStatus: {} = {};
-
+    
     font: Promise<Font> = new FontLoader().loadAsync('/asset/resource/font/helvetiker_regular.typeface.json');
 
     constructor() {
