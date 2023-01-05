@@ -166,7 +166,7 @@ const helper: Helper = new Helper(cpl3Scene);
 
 // sample car from glb
 const car = new Car(cpl3Scene, 10);
-const car2 = new Car(cpl3Scene, 20);
+// const car2 = new Car(cpl3Scene, 20);
 
 // sample gate from glb
 const gate = new Gate(cpl3Scene);
@@ -245,8 +245,8 @@ const render = () => {
     sideSpot1Helper.update();
     sideSpot2Helper.update();
     
-    car.sensorRay();
-    car2.sensorRay();
+    // car.sensorRay();
+    // car2.sensorRay();
 }
 
 gsap.ticker.add(render);

@@ -1,5 +1,5 @@
 import { cpl3Scene, gltfLoader, gsap, clock } from '../module/Basic';
-import { AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial, QuadraticBezierCurve3, Vector3, Raycaster } from 'three';
+import { AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial, QuadraticBezierCurve3, Vector3, Raycaster, Object3D } from 'three';
 import carGlb from '../asset/resource/models/car.glb';
 
 // ParkingArea move path import
@@ -31,13 +31,11 @@ export default class Car {
     entranceTl: gsap.core.Timeline = gsap.timeline();
     movePathTl: gsap.core.Timeline = gsap.timeline();
 
-    timeline: gsap.core.Timeline = (() => {
-        const timeline = gsap.timeline();
-        timeline.eventCallback('onUpdate', () => {
+    timeline: gsap.core.Timeline = gsap.timeline({
+        onUpdate: () => {
             
-        });
-        return timeline;
-    })();
+        }
+    })
     // nextPath: Vector3;
 
     frontSensor: Mesh = new Mesh(
@@ -52,6 +50,8 @@ export default class Car {
     frontSensorHeight: number = 1.5;
     
     stoppedTime: number;
+
+    reversing: boolean = false;
 
     constructor(cpl3Scene: Scene, stdSpeed: number) {
         this.stdSpeed = stdSpeed;
@@ -120,6 +120,9 @@ export default class Car {
                     const finalDuration = basicDuration * ( dist / this.stdDistance );
                     return finalDuration;
                 })(),
+                onStart:(() => {
+
+                }),
                 onUpdate: (() => {
                     // this.sensorRay(new Vector3(path[0].x, path[0].y, path[0].z));
                 })
@@ -146,7 +149,7 @@ export default class Car {
     movePath(): void {
 
         this.timeline.add(this.movePathTl);
-        this.act = 'moving';
+        this.mesh.userData.act = 'moving';
 
         this.mesh.position.set(path[1].x, path[1].y, path[1].z);
 
@@ -160,14 +163,14 @@ export default class Car {
             if(eachPath.quadraticPath) {
                 this.bezierPath(this.movePathTl, eachPath.quadraticPath, this.mesh.position);
 
-            } else { 
+            } else {
                 this.movePathTl.to(
                     this.mesh.position,
                     {
                         ease: 'none',
                         x: eachPath.x,
                         y: 0,
-                        z: eachPath.z,
+                        z: eachPath.z,  
                         duration: (() => {
 
                             const dist = vec3fromObj(path[i]).distanceTo(vec3fromObj(path[i-1]));
@@ -179,6 +182,17 @@ export default class Car {
                             // console.log(this.mesh.position);
                             const nextPath = new Vector3(path[i].x, path[i].y, path[i].z);
                             this.mesh.lookAt(nextPath);
+                        },
+                        onComplete: () => {
+                            /** reverse test code */
+                            // if(path[i].parkTo && path[i].parkTo === 55) {
+                            //     this.timeline.reverse();
+
+                            //     setTimeout(() => {
+                            //         this.timeline.play();
+                            //     }, 2000);
+                            // }
+                            
                         }
                     }
                 );
@@ -256,6 +270,7 @@ export default class Car {
     }
 
     sensorRay(): any {
+        if(this.reversing === true) return;
 
         const sensorPos: Vector3 = this.frontSensor.getWorldPosition(new Vector3());
         const direct = this.frontSensor.getWorldDirection(new Vector3());
@@ -273,17 +288,29 @@ export default class Car {
 
             if(
                 item.object.parent?.parent?.name === 'car' 
-                    &&
+                &&
                 item.distance < 5
+                &&
+                item.object.parent?.parent?.userData.act === 'moving'
             ) {
-                console.log('distance lower than 5');
+                // console.log('distance lower than 5');
                 // console.log('car ray ', true);
                 // this.stopped = true;
                 this.stoppedTime = clock.getElapsedTime();
                 this.timeline.pause();
                 break;
-            } else if(clock.getElapsedTime() - this.stoppedTime > 1){    
+            } else if(
+                item.object.parent?.parent?.name !== 'car' 
+                && 
+                clock.getElapsedTime() - this.stoppedTime > 0.6
+                && 
+                item.distance >= 5
+            ) {    
                 this.timeline.resume();
+                break;
+            } else if(this.reversing === false && item.object.parent?.parent?.userData.act === 'parking') {
+                this.reversing = true;
+                this.timeline.reverse();
                 break;
             }
         }
