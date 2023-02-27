@@ -12,6 +12,8 @@
         "experimentalDecorators": true,
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
 		"sourceMap": true,
 		"baseUrl": "./src",
 		"paths": {
