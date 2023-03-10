@@ -5,6 +5,9 @@ import carGlb from '../asset/resource/models/car.glb';
 // ParkingArea move path import
 import path from '../config/path';
 
+// current cpl status
+import { paStatus } from "../singleton/paStatus";
+
 import { vec3fromObj, drawBezierPath } from '../module/Util';
 export default class Car {
 
@@ -35,7 +38,9 @@ export default class Car {
         onUpdate: () => {
             
         }
-    })
+    });
+
+	parkingTl: gsap.core.Timeline = gsap.timeline();
     // nextPath: Vector3;
 
     frontSensor: Mesh = new Mesh(
@@ -154,7 +159,7 @@ export default class Car {
         this.mesh.position.set(path[1].x, path[1].y, path[1].z);
 
         // 주차장 경로 트래킹
-        this.movePathTl.repeat(-1);
+        // this.movePathTl.repeat(-1);
         // using to for each event
         for(let i = 2; i < path.length; i++) {
 
@@ -178,20 +183,51 @@ export default class Car {
                             return basicDuration * ( dist / this.stdDistance );
 
                         })(),
+						onStart: () => {
+							const nextPath = new Vector3(path[i].x, path[i].y, path[i].z);
+							this.mesh.lookAt(nextPath);
+						},
                         onUpdate: () => {
-                            // console.log(this.mesh.position);
-                            const nextPath = new Vector3(path[i].x, path[i].y, path[i].z);
-                            this.mesh.lookAt(nextPath);
+							console.log('onUpdate this.mesh.getWorldDirection', this.mesh.getWorldDirection(new Vector3()))
                         },
                         onComplete: () => {
-                            /** reverse test code */
-                            // if(path[i].parkTo && path[i].parkTo === 55) {
-                            //     this.timeline.reverse();
+							console.log('onComplete this.mesh.getWorldDirection', this.mesh.getWorldDirection(new Vector3()));
+							
+							// determine park action
+                            const chance = Math.random() * 1;
+                            if(
+								path[i].parkTo === 57
+   
+							) {
+								// set current act to 'parking'
+								this.act = 'parking';
+								// clear current timeline
+                                this.timeline.clear();
+								// set parked status true
+								paStatus[path[i].parkTo].parked = true;
 
-                            //     setTimeout(() => {
-                            //         this.timeline.play();
-                            //     }, 2000);
-                            // }
+								// get current mesh direction 
+								const currentDirection = this.mesh.getWorldDirection(new Vector3());
+								console.log(currentDirection);
+
+								const rightUpVec = new Vector3(4, 0, 4);
+								const worldRightUpVec = rightUpVec.clone().applyMatrix4(this.mesh.matrixWorld);
+								const currentMeshVec = this.mesh.position.clone();
+								const rightUpCord = currentMeshVec.clone().add(worldRightUpVec);
+
+								console.log('meshPosition: ', this.mesh.position);
+								console.log('rightUpCord: ', rightUpCord);
+
+                            }
+
+                            /** reverse test code */
+                            /* if(path[i].parkTo && path[i].parkTo === 55) {
+                                this.timeline.reverse();
+
+                                setTimeout(() => {
+                                    this.timeline.play();
+                                }, 2000);
+                            } */
                             
                         }
                     }
@@ -236,8 +272,11 @@ export default class Car {
 
                             return duration;
                         })(),
-                        onUpdate: () => {
+						onStart: () => {
                             this.mesh.lookAt(points[i]);
+						},
+                        onUpdate: () => {
+
                         }
                     }
                 );
@@ -251,7 +290,6 @@ export default class Car {
                         y: points[i].y,
                         z: points[i].z,
                         duration: (() => {
-
                             const dist = points[i].distanceTo(points[i-1]);
                             const basicDuration = this.stdDistance / this.stdSpeed;
                             const duration = basicDuration * ( dist / this.stdDistance ) ;
@@ -259,8 +297,11 @@ export default class Car {
                             return duration;
                         })(),
                         onComplete: onComplete,
+						onStart: () => {
+							this.mesh.lookAt(points[i]);
+						},
                         onUpdate: () => {
-                            this.mesh.lookAt(points[i]);
+
                         }
                     }
                 );
