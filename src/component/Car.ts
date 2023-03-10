@@ -159,7 +159,7 @@ export default class Car {
         this.mesh.position.set(path[1].x, path[1].y, path[1].z);
 
         // 주차장 경로 트래킹
-        // this.movePathTl.repeat(-1);
+        this.movePathTl.repeat(-1);
         // using to for each event
         for(let i = 2; i < path.length; i++) {
 
@@ -196,27 +196,34 @@ export default class Car {
 							// determine park action
                             const chance = Math.random() * 1;
                             if(
-								path[i].parkTo === 57
+								path[i].parkTo === 30
    
 							) {
+								const currentPosition = this.mesh.position.clone();
+								const directionVec = this.mesh.getWorldDirection(new Vector3()).clone();
+
+								const upperVec = directionVec.normalize().multiplyScalar(4);
+
+								console.log('currentMeshPosition', currentPosition);
+								console.log('upper way add 4 position', currentPosition.clone().add(upperVec));
+
+								const upperPosition = currentPosition.clone().add(upperVec);
+
+								const xAxis = new Vector3(0, 1, 0);
+								const rightVec = directionVec.applyAxisAngle(xAxis, - (Math.PI / 2)).normalize().multiplyScalar(4);
+
+								const rightUpperPostion = upperPosition.clone().add(rightVec);
+
+								console.log('currentPosition', currentPosition);
+								console.log('upperPosition', upperPosition);
+								console.log('rightUpperPosition', rightUpperPostion);
+
 								// set current act to 'parking'
 								this.act = 'parking';
 								// clear current timeline
                                 this.timeline.clear();
 								// set parked status true
 								paStatus[path[i].parkTo].parked = true;
-
-								// get current mesh direction 
-								const currentDirection = this.mesh.getWorldDirection(new Vector3());
-								console.log(currentDirection);
-
-								const rightUpVec = new Vector3(4, 0, 4);
-								const worldRightUpVec = rightUpVec.clone().applyMatrix4(this.mesh.matrixWorld);
-								const currentMeshVec = this.mesh.position.clone();
-								const rightUpCord = currentMeshVec.clone().add(worldRightUpVec);
-
-								console.log('meshPosition: ', this.mesh.position);
-								console.log('rightUpCord: ', rightUpCord);
 
                             }
 
