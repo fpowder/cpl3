@@ -197,7 +197,6 @@ export default class Car {
                             const chance = Math.random() * 1;
                             if(
 								path[i].parkTo === 30
-   
 							) {
 								const currentPosition = this.mesh.position.clone();
 								const directionVec = this.mesh.getWorldDirection(new Vector3()).clone();
@@ -209,14 +208,52 @@ export default class Car {
 
 								const upperPosition = currentPosition.clone().add(upperVec);
 
-								const xAxis = new Vector3(0, 1, 0);
-								const rightVec = directionVec.applyAxisAngle(xAxis, - (Math.PI / 2)).normalize().multiplyScalar(4);
+								const yAxis = new Vector3(0, 1, 0);
+								const rightVec = directionVec
+                                                    .clone()
+                                                    .applyAxisAngle(yAxis.clone(), - (Math.PI / 2))
+                                                    .normalize()
+                                                    .multiplyScalar(4);
 
 								const rightUpperPostion = upperPosition.clone().add(rightVec);
 
 								console.log('currentPosition', currentPosition);
 								console.log('upperPosition', upperPosition);
 								console.log('rightUpperPosition', rightUpperPostion);
+
+                                // add mesh on right upper position
+                                const boxGeo = new BoxGeometry(0.05, 0.5, 0.05);
+                                const boxMat = new MeshLambertMaterial({color: 'white'});
+                                const boxMesh = new Mesh(boxGeo, boxMat);
+                                boxMesh.position.set(rightUpperPostion.x, rightUpperPostion.y, rightUpperPostion.z);
+                                boxMesh.clone().position.set(currentPosition.x, currentPosition.y, currentPosition.z);
+                                boxMesh.clone().position.set(upperPosition.x, upperPosition.y, upperPosition.z);
+                                cpl3Scene.add(boxMesh);
+                                
+                                const direction = new Vector3();
+                                direction
+                                    .subVectors(rightUpperPostion.clone(), upperPosition.clone())
+                                    .normalize()
+                                    .multiplyScalar(4);
+
+                                const nRightPosition = rightUpperPostion.clone().add(direction);
+
+                                const nRightBox = boxMesh.clone();
+                                nRightBox.position.set(nRightPosition.x, nRightPosition.y, nRightPosition.z)
+                                cpl3Scene.add(nRightBox);
+
+                                const nUpperVec = directionVec
+                                                        .clone()
+                                                        .normalize()
+                                                        .multiplyScalar(4);
+                                const nRightUpperPosition = nRightPosition.clone().add(nUpperVec);
+
+                                const nRightUpperBox = boxMesh.clone();
+                                nRightUpperBox.position.set(nRightUpperPosition.x, nRightUpperPosition.y, nRightUpperPosition.z);
+                                cpl3Scene.add(nRightUpperBox);
+
+                                
+
 
 								// set current act to 'parking'
 								this.act = 'parking';
