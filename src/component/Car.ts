@@ -26,7 +26,7 @@ export default class Car {
     startZOffset: number = 20;
 
     act: string = 'entrance'; // entrance, moving, parking, exit
-    direction: string; // -x, +x, -z, +z
+    direction: string = 'forward'; // forward, backward
 
     parked: boolean = false;
     wayout: boolean = false;
@@ -197,11 +197,12 @@ export default class Car {
                             const chance = Math.random() * 1;
                             if(
 								path[i].parkTo === 30
-							) {
+							) {	
+								const parkingScalar = 3;
 								const currentPosition = this.mesh.position.clone();
 								const directionVec = this.mesh.getWorldDirection(new Vector3()).clone();
 
-								const upperVec = directionVec.normalize().multiplyScalar(4);
+								const upperVec = directionVec.normalize().multiplyScalar(parkingScalar);
 
 								console.log('currentMeshPosition', currentPosition);
 								console.log('upper way add 4 position', currentPosition.clone().add(upperVec));
@@ -213,7 +214,7 @@ export default class Car {
                                                     .clone()
                                                     .applyAxisAngle(yAxis.clone(), - (Math.PI / 2))
                                                     .normalize()
-                                                    .multiplyScalar(4);
+                                                    .multiplyScalar(parkingScalar);
 
 								const rightUpperPostion = upperPosition.clone().add(rightVec);
 
@@ -234,7 +235,7 @@ export default class Car {
                                 direction
                                     .subVectors(rightUpperPostion.clone(), upperPosition.clone())
                                     .normalize()
-                                    .multiplyScalar(4);
+                                    .multiplyScalar(parkingScalar);
 
                                 const nRightPosition = rightUpperPostion.clone().add(direction);
 
@@ -245,15 +246,45 @@ export default class Car {
                                 const nUpperVec = directionVec
                                                         .clone()
                                                         .normalize()
-                                                        .multiplyScalar(4);
-                                const nRightUpperPosition = nRightPosition.clone().add(nUpperVec);
+                                                        .multiplyScalar(parkingScalar);
+                                const nLeftUpperPosition = nRightPosition.clone().add(nUpperVec);
 
                                 const nRightUpperBox = boxMesh.clone();
-                                nRightUpperBox.position.set(nRightUpperPosition.x, nRightUpperPosition.y, nRightUpperPosition.z);
+                                nRightUpperBox.position.set(nLeftUpperPosition.x, nLeftUpperPosition.y, nLeftUpperPosition.z);
                                 cpl3Scene.add(nRightUpperBox);
 
-                                
+                                this.bezierPath(
+									this.parkingTl,
+									[currentPosition, upperPosition, rightUpperPostion],
+									this.mesh.position
+								);
 
+								this.bezierPath(
+									this.parkingTl,
+									[rightUpperPostion, nRightPosition, nLeftUpperPosition],
+									this.mesh.position,
+									() => {
+										this.direction = 'backward';
+										this.parkingTl.pause();
+										setTimeout(() => {
+											this.parkingTl.resume();
+										}, 1000);
+									}
+								);
+								
+								const backVec = directionVec
+													.clone()
+													.applyAxisAngle(yAxis.clone(), - Math.PI)
+													.normalize()
+													.multiplyScalar(parkingScalar * 2);
+
+								const backwardPos = nLeftUpperPosition.clone().add(backVec);
+								
+								this.bezierPath(
+									this.parkingTl,
+									[nLeftUpperPosition, backwardPos, currentPosition],
+									this.mesh.position
+								);
 
 								// set current act to 'parking'
 								this.act = 'parking';
@@ -283,8 +314,8 @@ export default class Car {
 
     bezierPath(
         timeline: gsap.core.Timeline, 
-        quadraticPath: {x: number, y: number, z: number}[],
-        positions: Vector3,
+        quadraticPath: {x: number, y: number, z: number}[] | Vector3[],
+        meshPosition: Vector3,
         onComplete?: gsap.Callback,
     ): void {
 
@@ -300,56 +331,42 @@ export default class Car {
         drawBezierPath(points);
 
         for(let i = 1; i < points.length - 1; i++) {
-            if(i !== points.length - 2){
-                
-                timeline.to(
-                    positions,
-                    {
-                        ease: 'none',
-                        x: points[i].x,
-                        y: points[i].y,
-                        z: points[i].z,
-                        duration: (() => {
-                            const dist = points[i].distanceTo(points[i-1]);
-                            const basicDuration = this.stdDistance / this.stdSpeed;
-                            const duration = basicDuration * ( dist / this.stdDistance );
+			timeline.to(
+				meshPosition,
+				{
+					ease: 'none',
+					x: points[i].x,
+					y: points[i].y,
+					z: points[i].z,
+					duration: (() => {
+						const dist = points[i].distanceTo(points[i-1]);
+						const basicDuration = this.stdDistance / this.stdSpeed;
+						const duration = basicDuration * ( dist / this.stdDistance );
 
-                            return duration;
-                        })(),
-						onStart: () => {
-                            this.mesh.lookAt(points[i]);
-						},
-                        onUpdate: () => {
-
-                        }
-                    }
-                );
-
-            } else {
-                timeline.to(
-                    positions,
-                    {
-                        ease: 'none',
-                        x: points[i].x,
-                        y: points[i].y,
-                        z: points[i].z,
-                        duration: (() => {
-                            const dist = points[i].distanceTo(points[i-1]);
-                            const basicDuration = this.stdDistance / this.stdSpeed;
-                            const duration = basicDuration * ( dist / this.stdDistance ) ;
-
-                            return duration;
-                        })(),
-                        onComplete: onComplete,
-						onStart: () => {
+						return duration;
+					})(),
+					onStart: () => {
+						if(this.direction === 'backward') {
+							this.mesh.lookAt(
+								this.mesh.position.add(
+									points[i].sub(this.mesh.position)
+								)
+							)
+						} else {
 							this.mesh.lookAt(points[i]);
-						},
-                        onUpdate: () => {
+						}
+					},
+					onUpdate: () => {
 
-                        }
-                    }
-                );
-            } // if else    
+					},
+					onComplete: () => {
+						// onComplete event triggiered when last bazier timeline complete
+						if(i == points.length - 2) {
+							onComplete();
+						}
+					}
+				}
+			);
         }
 
     }
