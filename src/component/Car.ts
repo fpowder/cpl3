@@ -8,7 +8,7 @@ import path from '../config/path';
 // current cpl status
 import { paStatus } from "../singleton/paStatus";
 
-import { vec3fromObj, drawBezierPath } from '../module/Util';
+import { vec3fromObj, drawBezierPath, getPaCord } from '../module/Util';
 export default class Car {
 
     mesh: Mesh;
@@ -194,10 +194,21 @@ export default class Car {
 							console.log('onComplete this.mesh.getWorldDirection', this.mesh.getWorldDirection(new Vector3()));
 							
 							// determine park action
-                            const chance = Math.random() * 1;
+                            const chance = Math.random() * 100;
                             if(
-								path[i].parkTo === 30
+								!paStatus[path[i].parkTo].parked
+								&&
+								chance > 50
 							) {	
+
+								// set current act to 'parking'
+								this.act = 'parking';
+								// clear current timeline
+								this.timeline.clear();
+								// set parked status true
+								paStatus[path[i].parkTo].parked = true;
+
+								const parkTo = path[i].parkTo;
 								const parkingScalar = 3;
 								const currentPosition = this.mesh.position.clone();
 								const directionVec = this.mesh.getWorldDirection(new Vector3()).clone();
@@ -286,12 +297,40 @@ export default class Car {
 									this.mesh.position
 								);
 
-								// set current act to 'parking'
-								this.act = 'parking';
-								// clear current timeline
-                                this.timeline.clear();
-								// set parked status true
-								paStatus[path[i].parkTo].parked = true;
+								const paCenter = getPaCord(parkTo);
+								this.parkingTl.to(
+									this.mesh.position,
+									{
+										ease: 'none',
+										x: paCenter.x,
+										y: paCenter.y,
+										z: paCenter.z,
+										duration: (() => {
+
+											const dist = this.mesh.position.clone().distanceTo(vec3fromObj(paCenter));
+											const basicDuration = this.stdDistance / this.stdSpeed;
+											const duration = basicDuration * ( dist / this.stdDistance );
+					
+											return duration;
+										})(),
+										onStart: () => {
+											this.mesh.lookAt(
+												this.mesh.position.clone().add(
+													this.mesh.position.clone().sub(vec3fromObj(paCenter))
+												)
+											);
+										},
+										onComplete: () => {
+											// parking area occupied set
+
+											// if move forward animation is active make it stop
+											
+											// way out path start after some minutes
+										}
+									}
+								);
+
+
 
                             }
 
@@ -347,9 +386,10 @@ export default class Car {
 					})(),
 					onStart: () => {
 						if(this.direction === 'backward') {
+							const currentPos = this.mesh.position.clone();
 							this.mesh.lookAt(
-								this.mesh.position.add(
-									points[i].sub(this.mesh.position)
+								currentPos.add(
+									currentPos.clone().sub(points[i])
 								)
 							)
 						} else {
@@ -362,7 +402,8 @@ export default class Car {
 					onComplete: () => {
 						// onComplete event triggiered when last bazier timeline complete
 						if(i == points.length - 2) {
-							onComplete();
+							// onComplete ? onComplete() : (() => { return; });
+							onComplete && onComplete();
 						}
 					}
 				}
