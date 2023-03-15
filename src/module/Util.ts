@@ -1,6 +1,16 @@
 import { radToDeg } from 'three/src/math/MathUtils';
 import { Vector3, BoxGeometry, MeshLambertMaterial, Mesh } from 'three';
 import { cpl3Scene } from './Basic';
+import parkingAreaCords from '../config/parkingAreaCords';
+
+export const getPaCord = (paNum: number): {x: number, y: number, z: number} | null => {
+	if(parkingAreaCords[paNum]) {
+		const paCord = parkingAreaCords[paNum].cord;
+		const x = paCord.start[0] + paCord.vector[0] / 2;
+		const z = paCord.start[1] + paCord.vector[1] / 2;
+		return { x, y: 0, z }
+	}
+}
 
 export const vec3fromObj = (cord: {x: number, y: number, z: number}) => {
     return new Vector3(cord.x, cord.y, cord.z);
