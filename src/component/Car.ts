@@ -196,10 +196,14 @@ export default class Car {
 							// determine park action
                             const chance = Math.random() * 100;
                             if(
+                                path[i].parkTo
+                                &&
 								!paStatus[path[i].parkTo].parked
 								&&
 								chance > 50
 							) {	
+
+                                console.log('park to: ',path[i].parkTo)
 
 								// set current act to 'parking'
 								this.act = 'parking';
@@ -336,9 +340,7 @@ export default class Car {
 									}
 								);
 
-
-
-                            }
+                            } // if
 
                             /** reverse test code */
                             /* if(path[i].parkTo && path[i].parkTo === 55) {
@@ -349,9 +351,9 @@ export default class Car {
                                 }, 2000);
                             } */
                             
-                        }
+                        } // onComplete
                     }
-                );
+                ); // gsap to
             }
         } // for
 
