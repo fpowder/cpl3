@@ -208,17 +208,22 @@ export default class Car {
 								// set parked status true
 								paStatus[path[i].parkTo].parked = true;
 
+
 								const parkTo = path[i].parkTo;
 								const parkingScalar = 3;
-								const currentPosition = this.mesh.position.clone();
+								const initialPosition = this.mesh.position.clone();
 								const directionVec = this.mesh.getWorldDirection(new Vector3()).clone();
 
+
+                                /** 
+                                 * create qudratic edge position for parking start 
+                                 * */
 								const upperVec = directionVec.normalize().multiplyScalar(parkingScalar);
 
-								console.log('currentMeshPosition', currentPosition);
-								console.log('upper way add 4 position', currentPosition.clone().add(upperVec));
+								console.log('initialMeshPosition', initialPosition);
+								console.log('upper way add 4 position', initialPosition.clone().add(upperVec));
 
-								const upperPosition = currentPosition.clone().add(upperVec);
+								const upperPosition = initialPosition.clone().add(upperVec);
 
 								const yAxis = new Vector3(0, 1, 0);
 								const rightVec = directionVec
@@ -229,7 +234,7 @@ export default class Car {
 
 								const rightUpperPostion = upperPosition.clone().add(rightVec);
 
-								console.log('currentPosition', currentPosition);
+								console.log('initialPosition', initialPosition);
 								console.log('upperPosition', upperPosition);
 								console.log('rightUpperPosition', rightUpperPostion);
 
@@ -238,41 +243,42 @@ export default class Car {
                                 const boxMat = new MeshLambertMaterial({color: 'white'});
                                 const boxMesh = new Mesh(boxGeo, boxMat);
                                 boxMesh.position.set(rightUpperPostion.x, rightUpperPostion.y, rightUpperPostion.z);
-                                boxMesh.clone().position.set(currentPosition.x, currentPosition.y, currentPosition.z);
+                                boxMesh.clone().position.set(initialPosition.x, initialPosition.y, initialPosition.z);
                                 boxMesh.clone().position.set(upperPosition.x, upperPosition.y, upperPosition.z);
                                 cpl3Scene.add(boxMesh);
                                 
+                                /**  */
                                 const direction = new Vector3();
                                 direction
                                     .subVectors(rightUpperPostion.clone(), upperPosition.clone())
                                     .normalize()
                                     .multiplyScalar(parkingScalar);
 
-                                const nRightPosition = rightUpperPostion.clone().add(direction);
+                                const nUpperPosition = rightUpperPostion.clone().add(direction);
 
-                                const nRightBox = boxMesh.clone();
-                                nRightBox.position.set(nRightPosition.x, nRightPosition.y, nRightPosition.z)
-                                cpl3Scene.add(nRightBox);
+                                const nUpperPositionBox = boxMesh.clone();
+                                nUpperPositionBox.position.set(nUpperPosition.x, nUpperPosition.y, nUpperPosition.z)
+                                cpl3Scene.add(nUpperPositionBox);
 
-                                const nUpperVec = directionVec
+                                const nRightUpperVec = directionVec
                                                         .clone()
                                                         .normalize()
                                                         .multiplyScalar(parkingScalar);
-                                const nLeftUpperPosition = nRightPosition.clone().add(nUpperVec);
+                                const nRightUpperPosition = nUpperPosition.clone().add(nRightUpperVec);
 
-                                const nRightUpperBox = boxMesh.clone();
-                                nRightUpperBox.position.set(nLeftUpperPosition.x, nLeftUpperPosition.y, nLeftUpperPosition.z);
-                                cpl3Scene.add(nRightUpperBox);
+                                const nRightUpperPositionBox = boxMesh.clone();
+                                nRightUpperPositionBox.position.set(nRightUpperPosition.x, nRightUpperPosition.y, nRightUpperPosition.z);
+                                cpl3Scene.add(nRightUpperPositionBox);
 
                                 this.bezierPath(
 									this.parkingTl,
-									[currentPosition, upperPosition, rightUpperPostion],
+									[initialPosition, upperPosition, rightUpperPostion],
 									this.mesh.position
 								);
 
 								this.bezierPath(
 									this.parkingTl,
-									[rightUpperPostion, nRightPosition, nLeftUpperPosition],
+									[rightUpperPostion, nUpperPosition, nRightUpperPosition],
 									this.mesh.position,
 									() => {
 										this.direction = 'backward';
@@ -289,11 +295,11 @@ export default class Car {
 													.normalize()
 													.multiplyScalar(parkingScalar * 2);
 
-								const backwardPos = nLeftUpperPosition.clone().add(backVec);
+								const backwardPosition = nRightUpperPosition.clone().add(backVec);
 								
 								this.bezierPath(
 									this.parkingTl,
-									[nLeftUpperPosition, backwardPos, currentPosition],
+									[nRightUpperPosition, backwardPosition, initialPosition],
 									this.mesh.position
 								);
 
