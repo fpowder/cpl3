@@ -193,154 +193,8 @@ export default class Car {
                         onComplete: () => {
 							console.log('onComplete this.mesh.getWorldDirection', this.mesh.getWorldDirection(new Vector3()));
 							
-							// determine park action
-                            const chance = Math.random() * 100;
-                            if(
-                                path[i].parkTo
-                                &&
-								!paStatus[path[i].parkTo].parked
-								&&
-								chance > 50
-							) {	
-
-                                console.log('park to: ',path[i].parkTo)
-
-								// set current act to 'parking'
-								this.act = 'parking';
-								// clear current timeline
-								this.timeline.clear();
-								// set parked status true
-								paStatus[path[i].parkTo].parked = true;
-
-
-								const parkTo = path[i].parkTo;
-								const parkingScalar = 3;
-								const initialPosition = this.mesh.position.clone();
-								const directionVec = this.mesh.getWorldDirection(new Vector3()).clone();
-
-
-                                /** 
-                                 * create qudratic edge position for parking start 
-                                 * */
-								const upperVec = directionVec.normalize().multiplyScalar(parkingScalar);
-
-								console.log('initialMeshPosition', initialPosition);
-								console.log('upper way add 4 position', initialPosition.clone().add(upperVec));
-
-								const upperPosition = initialPosition.clone().add(upperVec);
-
-								const yAxis = new Vector3(0, 1, 0);
-								const rightVec = directionVec
-                                                    .clone()
-                                                    .applyAxisAngle(yAxis.clone(), - (Math.PI / 2))
-                                                    .normalize()
-                                                    .multiplyScalar(parkingScalar);
-
-								const rightUpperPostion = upperPosition.clone().add(rightVec);
-
-								console.log('initialPosition', initialPosition);
-								console.log('upperPosition', upperPosition);
-								console.log('rightUpperPosition', rightUpperPostion);
-
-                                // add mesh on right upper position
-                                const boxGeo = new BoxGeometry(0.05, 0.5, 0.05);
-                                const boxMat = new MeshLambertMaterial({color: 'white'});
-                                const boxMesh = new Mesh(boxGeo, boxMat);
-                                boxMesh.position.set(rightUpperPostion.x, rightUpperPostion.y, rightUpperPostion.z);
-                                boxMesh.clone().position.set(initialPosition.x, initialPosition.y, initialPosition.z);
-                                boxMesh.clone().position.set(upperPosition.x, upperPosition.y, upperPosition.z);
-                                cpl3Scene.add(boxMesh);
-                                
-                                /**  */
-                                const direction = new Vector3();
-                                direction
-                                    .subVectors(rightUpperPostion.clone(), upperPosition.clone())
-                                    .normalize()
-                                    .multiplyScalar(parkingScalar);
-
-                                const nUpperPosition = rightUpperPostion.clone().add(direction);
-
-                                const nUpperPositionBox = boxMesh.clone();
-                                nUpperPositionBox.position.set(nUpperPosition.x, nUpperPosition.y, nUpperPosition.z)
-                                cpl3Scene.add(nUpperPositionBox);
-
-                                const nRightUpperVec = directionVec
-                                                        .clone()
-                                                        .normalize()
-                                                        .multiplyScalar(parkingScalar);
-                                const nRightUpperPosition = nUpperPosition.clone().add(nRightUpperVec);
-
-                                const nRightUpperPositionBox = boxMesh.clone();
-                                nRightUpperPositionBox.position.set(nRightUpperPosition.x, nRightUpperPosition.y, nRightUpperPosition.z);
-                                cpl3Scene.add(nRightUpperPositionBox);
-
-                                this.bezierPath(
-									this.parkingTl,
-									[initialPosition, upperPosition, rightUpperPostion],
-									this.mesh.position
-								);
-
-								this.bezierPath(
-									this.parkingTl,
-									[rightUpperPostion, nUpperPosition, nRightUpperPosition],
-									this.mesh.position,
-									() => {
-										this.direction = 'backward';
-										this.parkingTl.pause();
-										setTimeout(() => {
-											this.parkingTl.resume();
-										}, 1000);
-									}
-								);
-								
-								const backVec = directionVec
-													.clone()
-													.applyAxisAngle(yAxis.clone(), - Math.PI)
-													.normalize()
-													.multiplyScalar(parkingScalar * 2);
-
-								const backwardPosition = nRightUpperPosition.clone().add(backVec);
-								
-								this.bezierPath(
-									this.parkingTl,
-									[nRightUpperPosition, backwardPosition, initialPosition],
-									this.mesh.position
-								);
-
-								const paCenter = getPaCord(parkTo);
-								this.parkingTl.to(
-									this.mesh.position,
-									{
-										ease: 'none',
-										x: paCenter.x,
-										y: paCenter.y,
-										z: paCenter.z,
-										duration: (() => {
-
-											const dist = this.mesh.position.clone().distanceTo(vec3fromObj(paCenter));
-											const basicDuration = this.stdDistance / this.stdSpeed;
-											const duration = basicDuration * ( dist / this.stdDistance );
-					
-											return duration;
-										})(),
-										onStart: () => {
-											this.mesh.lookAt(
-												this.mesh.position.clone().add(
-													this.mesh.position.clone().sub(vec3fromObj(paCenter))
-												)
-											);
-										},
-										onComplete: () => {
-											// parking area occupied set
-
-											// if move forward animation is active make it stop
-											
-											// way out path start after some minutes
-										}
-									}
-								);
-
-                            } // if
+                            // 주차장 이동중 주차여부를 결정하고 주차 애니매이션을 실행
+							this.parkingPath(eachPath);
 
                             /** reverse test code */
                             /* if(path[i].parkTo && path[i].parkTo === 55) {
@@ -358,6 +212,162 @@ export default class Car {
         } // for
 
     } // movePath
+
+    parkingPath(eachPath: {
+        x: number;
+        y: number;
+        z: number;
+        quadraticPath?: any[];
+        parkTo?: number;
+    }): void {
+        // determine park action
+        const chance = Math.random() * 100;
+        if(
+            eachPath.parkTo
+            &&
+            !paStatus[eachPath.parkTo].parked
+            &&
+            chance > 50
+        ) {	
+
+            console.log('park to: ', eachPath.parkTo)
+
+            // set current act to 'parking'
+            this.act = 'parking';
+            // clear current timeline
+            this.timeline.clear();
+            // set parked status true
+            paStatus[eachPath.parkTo].parked = true;
+
+            const parkTo = eachPath.parkTo;
+            const parkingScalar = 3;
+            const initialPosition = this.mesh.position.clone();
+            const directionVec = this.mesh.getWorldDirection(new Vector3()).clone();
+
+
+            /** 
+             * create qudratic edge position for parking start 
+             * */
+            const upperVec = directionVec.normalize().multiplyScalar(parkingScalar);
+
+            console.log('initialMeshPosition', initialPosition);
+            console.log('upper way add 4 position', initialPosition.clone().add(upperVec));
+
+            const upperPosition = initialPosition.clone().add(upperVec);
+
+            const yAxis = new Vector3(0, 1, 0);
+            const rightVec = directionVec
+                                .clone()
+                                .applyAxisAngle(yAxis.clone(), - (Math.PI / 2))
+                                .normalize()
+                                .multiplyScalar(parkingScalar);
+
+            const rightUpperPostion = upperPosition.clone().add(rightVec);
+
+            console.log('initialPosition', initialPosition);
+            console.log('upperPosition', upperPosition);
+            console.log('rightUpperPosition', rightUpperPostion);
+
+            // add mesh on right upper position
+            const boxGeo = new BoxGeometry(0.05, 0.5, 0.05);
+            const boxMat = new MeshLambertMaterial({color: 'white'});
+            const boxMesh = new Mesh(boxGeo, boxMat);
+            boxMesh.position.set(rightUpperPostion.x, rightUpperPostion.y, rightUpperPostion.z);
+            boxMesh.clone().position.set(initialPosition.x, initialPosition.y, initialPosition.z);
+            boxMesh.clone().position.set(upperPosition.x, upperPosition.y, upperPosition.z);
+            cpl3Scene.add(boxMesh);
+            
+            /**  */
+            const direction = new Vector3();
+            direction
+                .subVectors(rightUpperPostion.clone(), upperPosition.clone())
+                .normalize()
+                .multiplyScalar(parkingScalar);
+
+            const nUpperPosition = rightUpperPostion.clone().add(direction);
+
+            const nUpperPositionBox = boxMesh.clone();
+            nUpperPositionBox.position.set(nUpperPosition.x, nUpperPosition.y, nUpperPosition.z)
+            cpl3Scene.add(nUpperPositionBox);
+
+            const nRightUpperVec = directionVec
+                                    .clone()
+                                    .normalize()
+                                    .multiplyScalar(parkingScalar);
+            const nRightUpperPosition = nUpperPosition.clone().add(nRightUpperVec);
+
+            const nRightUpperPositionBox = boxMesh.clone();
+            nRightUpperPositionBox.position.set(nRightUpperPosition.x, nRightUpperPosition.y, nRightUpperPosition.z);
+            cpl3Scene.add(nRightUpperPositionBox);
+
+            this.bezierPath(
+                this.parkingTl,
+                [initialPosition, upperPosition, rightUpperPostion],
+                this.mesh.position
+            );
+
+            this.bezierPath(
+                this.parkingTl,
+                [rightUpperPostion, nUpperPosition, nRightUpperPosition],
+                this.mesh.position,
+                () => {
+                    this.direction = 'backward';
+                    this.parkingTl.pause();
+                    setTimeout(() => {
+                        this.parkingTl.resume();
+                    }, 1000);
+                }
+            );
+            
+            const backVec = directionVec
+                                .clone()
+                                .applyAxisAngle(yAxis.clone(), - Math.PI)
+                                .normalize()
+                                .multiplyScalar(parkingScalar * 2);
+
+            const backwardPosition = nRightUpperPosition.clone().add(backVec);
+            
+            this.bezierPath(
+                this.parkingTl,
+                [nRightUpperPosition, backwardPosition, initialPosition],
+                this.mesh.position
+            );
+
+            const paCenter = getPaCord(parkTo);
+            this.parkingTl.to(
+                this.mesh.position,
+                {
+                    ease: 'none',
+                    x: paCenter.x,
+                    y: paCenter.y,
+                    z: paCenter.z,
+                    duration: (() => {
+
+                        const dist = this.mesh.position.clone().distanceTo(vec3fromObj(paCenter));
+                        const basicDuration = this.stdDistance / this.stdSpeed;
+                        const duration = basicDuration * ( dist / this.stdDistance );
+
+                        return duration;
+                    })(),
+                    onStart: () => {
+                        this.mesh.lookAt(
+                            this.mesh.position.clone().add(
+                                this.mesh.position.clone().sub(vec3fromObj(paCenter))
+                            )
+                        );
+                    },
+                    onComplete: () => {
+                        // parking area occupied set
+
+                        // if move forward animation is active make it stop
+                        
+                        // way out path start after some minutes
+                    }
+                }
+            );
+
+        } // if
+    }
 
     bezierPath(
         timeline: gsap.core.Timeline, 
