@@ -1,4 +1,14 @@
-const parkingAreaCords = {
+const parkingAreaCords: {
+	[key: number]: {
+		group: string,
+		direction: string,
+		cord: { 
+			start: [number, number],
+			vector: [number, number]
+		},
+		wayoutPath? : number
+	}
+} = {
     1: {
         group: 'top',
         direction: 'down',
