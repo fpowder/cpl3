@@ -40,6 +40,13 @@ export const createVec3ObjArr = (vec3Arr: Vector3[]) :any[]  => {
     return result
 }
 
+export const getPAVerticalLength = (PANum: number): number => {
+	const paInfo = parkingAreaCords[PANum];
+	const paCordVec = paInfo.cord.vector;
+
+	return paCordVec[0] >= paCordVec[1] ? paCordVec[0] : paCordVec[1];	
+}
+
 export const createRoundPath = (
     startDeg: number, pointsCnt: number,
     startCord: vec3Obj,

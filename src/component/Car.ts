@@ -8,7 +8,7 @@ import path from '../config/path';
 // current cpl status
 import { paStatus } from "../singleton/paStatus";
 
-import { vec3fromObj, drawBezierPath, getPaCord } from '../module/Util';
+import { vec3fromObj, drawBezierPath, getPaCord, getPAVerticalLength } from '../module/Util';
 export default class Car {
 
     mesh: Mesh;
@@ -41,7 +41,7 @@ export default class Car {
     });
 
 	parkingTl: gsap.core.Timeline = gsap.timeline();
-    // nextPath: Vector3;
+	wayoutTl: gsap.core.Timeline = gsap.timeline();
 
     frontSensor: Mesh = new Mesh(
         new BoxGeometry(0.3, 0.3, 0.3),
@@ -244,7 +244,6 @@ export default class Car {
             const initialPosition = this.mesh.position.clone();
             const directionVec = this.mesh.getWorldDirection(new Vector3()).clone();
 
-
             /** 
              * create qudratic edge position for parking start 
              * */
@@ -357,11 +356,35 @@ export default class Car {
                         );
                     },
                     onComplete: () => {
-                        // parking area occupied set
-
                         // if move forward animation is active make it stop
                         
-                        // way out path start after some minutes
+                        // way out path start after some seconds
+						/**
+						 * 1. 주차 구역의 세로 절반 길이만큼 직선으로 이동
+						 * 2. 주차 구역의 wayout path 좌표로 bezier path 또는 circle경로로 이동
+						 * 3. 출차 구역까지 이동하는 path지정
+						 */
+						// process 1
+						const meshDirection = this.mesh.getWorldDirection(new Vector3())
+												.clone()
+												.normalize();
+
+						const wayout1Pos = this.mesh.position.clone()
+							.add(
+								meshDirection.multiplyScalar(getPAVerticalLength(parkTo) / 2)
+							)
+
+						this.wayoutTl.to(
+							this.mesh.position,
+							{
+								ease: 'none',
+								x: wayout1Pos.x,
+								y: wayout1Pos.y,
+								z: wayout1Pos.z
+							}
+						);
+						
+						
                     }
                 }
             );
