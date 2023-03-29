@@ -8,7 +8,9 @@ import path from '../config/path';
 // current cpl status
 import { paStatus } from "../singleton/paStatus";
 
-import { vec3fromObj, drawBezierPath, getPaCord, getPAVerticalLength } from '../module/Util';
+import { vec3FromObj, drawBezierPath, getPaCord, getPAVerticalLength, getOrthogonalDirection, pathDivide } from '../module/Util';
+import parkingAreaCords from '../config/parkingAreaCords';
+import { start } from 'repl';
 export default class Car {
 
     mesh: Mesh;
@@ -27,9 +29,12 @@ export default class Car {
 
     act: string = 'entrance'; // entrance, moving, parking, exit
     direction: string = 'forward'; // forward, backward
-
+	worldDirection: Vector3;
+	
     parked: boolean = false;
     wayout: boolean = false;
+
+	parkedTo: number = 0;
 
     entranceTl: gsap.core.Timeline = gsap.timeline();
     movePathTl: gsap.core.Timeline = gsap.timeline();
@@ -178,7 +183,7 @@ export default class Car {
                         z: eachPath.z,  
                         duration: (() => {
 
-                            const dist = vec3fromObj(path[i]).distanceTo(vec3fromObj(path[i-1]));
+                            const dist = vec3FromObj(path[i]).distanceTo(vec3FromObj(path[i-1]));
                             const basicDuration = this.stdDistance / this.stdSpeed;
                             return basicDuration * ( dist / this.stdDistance );
 
@@ -223,11 +228,11 @@ export default class Car {
         // determine park action
         const chance = Math.random() * 100;
         if(
-            eachPath.parkTo
+            eachPath.parkTo === 51
             &&
             !paStatus[eachPath.parkTo].parked
-            &&
-            chance > 50
+            // &&
+            // chance > 50
         ) {	
 
             console.log('park to: ', eachPath.parkTo)
@@ -342,7 +347,7 @@ export default class Car {
                     z: paCenter.z,
                     duration: (() => {
 
-                        const dist = this.mesh.position.clone().distanceTo(vec3fromObj(paCenter));
+                        const dist = this.mesh.position.clone().distanceTo(vec3FromObj(paCenter));
                         const basicDuration = this.stdDistance / this.stdSpeed;
                         const duration = basicDuration * ( dist / this.stdDistance );
 
@@ -351,25 +356,33 @@ export default class Car {
                     onStart: () => {
                         this.mesh.lookAt(
                             this.mesh.position.clone().add(
-                                this.mesh.position.clone().sub(vec3fromObj(paCenter))
+                                this.mesh.position.clone().sub(vec3FromObj(paCenter))
                             )
                         );
+						this.worldDirection = this.mesh.getWorldDirection(new Vector3()).normalize();
+						console.log('this.worldDirection: ', this.worldDirection);
+						console.log(`is 1 ? ${(() => {
+							return this.worldDirection.z === -1 ? true : false;
+						})()}`)
                     },
                     onComplete: () => {
+						
+
                         // if move forward animation is active make it stop
                         
                         // way out path start after some seconds
 						/**
-						 * 1. 주차 구역의 세로 절반 길이만큼 직선으로 이동
-						 * 2. 주차 구역의 wayout path 좌표로 bezier path 또는 circle경로로 이동
-						 * 3. 출차 구역까지 이동하는 path지정
+						 * process 1. 주차 구역의 세로 절반 길이만큼 직선으로 이동
+						 * process 2. 주차 구역의 wayout path 좌표로 bezier path 또는 circle경로로 이동
+						 * process 3. 출차 구역까지 이동하는 path지정
 						 */
 						// process 1
 						const meshDirection = this.mesh.getWorldDirection(new Vector3())
 												.clone()
 												.normalize();
 
-						const wayout1Pos = this.mesh.position.clone()
+						const wayout1Pos = this.mesh.position
+							.clone()
 							.add(
 								meshDirection.multiplyScalar(getPAVerticalLength(parkTo) / 2)
 							)
@@ -380,11 +393,60 @@ export default class Car {
 								ease: 'none',
 								x: wayout1Pos.x,
 								y: wayout1Pos.y,
-								z: wayout1Pos.z
+								z: wayout1Pos.z,
+								onComplete: () => {
+									console.log('world vector3', this.mesh.getWorldDirection(new Vector3()).clone().normalize());
+
+									const wayoutPath = parkingAreaCords[parkTo].wayoutPath;
+									const wayoutPos = new Vector3(path[wayoutPath].x, path[wayoutPath].y, path[wayoutPath].z);
+									
+									let orthogonalDirection =	
+										getOrthogonalDirection(this.mesh.getWorldDirection(new Vector3()).clone());
+									console.log('orthogonalDirection', orthogonalDirection);
+
+									const points = pathDivide(2, this.mesh.position, wayoutPos);
+									console.log('devided points', points);
+
+									let startPosition = this.mesh.position.clone();
+									console.log('startPosition', startPosition);
+									const bezierEdges = [];
+									bezierEdges.push(startPosition);
+
+									let next: Vector3;
+									let add: Vector3;
+									
+									for(let i = 1; i < points.length; i++) {
+										if(i === 1) { 
+											if(orthogonalDirection.z !== 0) {
+												add =  new Vector3(0, 0, Math.abs(points[i].z - startPosition.z) * orthogonalDirection.z);
+											} else {
+												add =  new Vector3(Math.abs(points[i].x - startPosition.x) * orthogonalDirection.x, 0, 0);
+											}
+											 
+											next = startPosition.clone().add(add);
+											orthogonalDirection = points[i].clone().sub(next.clone()).normalize();
+											bezierEdges.push(next);
+
+										} else {
+											if(orthogonalDirection.z !== 0) {
+												add = new Vector3(0, 0, Math.abs(points[i-1].z - next.z) * orthogonalDirection.z * 2);
+											} else {
+												add = new Vector3(Math.abs(points[i-1].x - next.x) * orthogonalDirection.x * 2, 0, 0);
+											}
+
+											next = next.clone().add(add);
+											orthogonalDirection = points[i].clone().sub(next.clone()).normalize();
+											
+											bezierEdges.push(points[i-1]);
+											bezierEdges.push(next);
+
+										}
+									} //for
+									bezierEdges.push(points[points.length - 1]);
+									console.log('bezierEdges : ', bezierEdges);
+								}
 							}
-						);
-						
-						
+						); //wayoutTl.to
                     }
                 }
             );
