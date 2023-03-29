@@ -34,7 +34,6 @@ export const multipleBezierPath = (
 
 	console.log(segmentPositions);
 
-	// const wayVec = new Vector3(0, 1, 0);
 	let flag = -1;
 	for (let i = 0; i < segmentCount; i++) {
 		const segment: Vector3 = segmentPositions[i+1].sub(segmentPositions[i]);
@@ -47,8 +46,38 @@ export const multipleBezierPath = (
 			const quadraticPoint = segmentPositions[i].add(applyVec);
 			flag = 1;
 			console.log('quadraticPoint', quadraticPoint);
-		} 
+		} else {
+			const symmetryVec = new Vector3(-inversedSeg.x, inversedSeg.y, 0);
+			const applyVec = symmetryVec.clone().sub(inversedSeg).multiplyScalar(0.5);
+			const quadraticPoint = segmentPositions[i].add(applyVec);
+			flag = -1;
+			console.log('flag 1 quadraticPoint', quadraticPoint);
+		}
 	}
+
+
+/* 	// Define the current position of the mesh
+	const currentPosition = mesh.position.clone();
+
+	// Define the direction the mesh is facing
+	const direction = new Vector3(0, 0, -1).applyQuaternion(mesh.quaternion);
+
+	// Define the target position
+	const targetPosition = new Vector3(50, 50, 0);
+
+	// Define the distance between the current position and the target position
+	const distance = currentPosition.distanceTo(targetPosition);
+
+	// Define the length of the second segment of the bezier path
+	const segmentLength = distance / 3;
+
+	// Define the second point of the bezier path based on the direction the mesh is facing
+	const secondPoint = new Vector3().copy(direction).multiplyScalar(segmentLength).add(currentPosition);
+
+	// Define the three points of the bezier path
+	const points = [currentPosition, secondPoint, targetPosition];
+
+	console.log(points); */
 
 }
 

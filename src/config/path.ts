@@ -78,121 +78,121 @@ const path: {
 			{ x: 14, y: 0, z: 127 },
 			{ x: 14, y: 0, z: 121 },
 		],
-		parkTo: 31,
+		parkTo: 32,
 	}, // 10
 	{
 		x: 14,
 		y: 0,
 		z: 114.5,
-		parkTo: 30,
+		parkTo: 31,
 	}, // 11
 	{
 		x: 14,
 		y: 0,
 		z: 109,
-		parkTo: 29,
+		parkTo: 30,
 	}, // 12
 	{
 		x: 14,
 		y: 0,
 		z: 102,
-		parkTo: 28,
+		parkTo: 29,
 	}, // 13
 	{
 		x: 14,
 		y: 0,
 		z: 96,
-		parkTo: 27,
+		parkTo: 28,
 	}, // 14
 	{
 		x: 14,
 		y: 0,
 		z: 89.5,
-		parkTo: 26,
+		parkTo: 27,
 	}, // 15
 	{
 		x: 14,
 		y: 0,
 		z: 84.5,
-		parkTo: 25,
+		parkTo: 26,
 	}, // 16
 	{
 		x: 14,
 		y: 0,
 		z: 80,
-		parkTo: 24,
+		parkTo: 25,
 	}, // 17
 	{
 		x: 14,
 		y: 0,
 		z: 74.5,
-		parkTo: 23,
+		parkTo: 24,
 	}, // 18
 	{
 		x: 14,
 		y: 0,
 		z: 69.5,
-		parkTo: 22,
+		parkTo: 23,
 	}, // 19
 	{
 		x: 14,
 		y: 0,
 		z: 65,
-		parkTo: 21,
+		parkTo: 22,
 	}, // 20
 	{
 		x: 14,
 		y: 0,
 		z: 59.5,
-		parkTo: 20,
+		parkTo: 21,
 	}, // 21
 	{
 		x: 14,
 		y: 0,
 		z: 54.5,
-		parkTo: 19,
+		parkTo: 20,
 	}, // 22
 	{
 		x: 14,
 		y: 0,
 		z: 50,
-		parkTo: 18,
+		parkTo: 19,
 	}, // 23
 	{
 		x: 14,
 		y: 0,
 		z: 44.5,
-		parkTo: 17,
+		parkTo: 18,
 	}, // 24
 	{
 		x: 14,
 		y: 0,
 		z: 39.5,
-		parkTo: 16,
+		parkTo: 17,
 	}, // 25
 	{
 		x: 14,
 		y: 0,
 		z: 35,
-		parkTo: 15,
+		parkTo: 16,
 	}, // 26
 	{
 		x: 14,
 		y: 0,
 		z: 29.5,
-		parkTo: 14,
+		parkTo: 15,
 	}, // 27
 	{
 		x: 14,
 		y: 0,
 		z: 24.5,
-		parkTo: 13,
+		parkTo: 14,
 	}, // 28
 	{
 		x: 14,
 		y: 0,
 		z: 19.5,
-		parkTo: 12,
+		parkTo: 13,
 	}, // 29
 	{
 		x: 20,
@@ -203,25 +203,25 @@ const path: {
 			{ x: 14, y: 0, z: 15 },
 			{ x: 20, y: 0, z: 15 },
 		],
-		parkTo: 3,
+		parkTo: 2,
 	}, // 30
 	{
 		x: 26.5,
 		y: 0,
 		z: 15,
-		parkTo: 4,
+		parkTo: 3,
 	}, // 31
 	{
 		x: 31.5,
 		y: 0,
 		z: 15,
-		parkTo: 5,
+		parkTo: 4,
 	}, // 32
 	{
 		x: 37.5,
 		y: 0,
 		z: 15,
-		parkTo: 7,
+		parkTo: 5,
 	}, // 33
 	{
 		x: 43.5,
@@ -232,7 +232,7 @@ const path: {
 			{ x: 43.5, y: 0, z: 15 },
 			{ x: 43.5, y: 0, z: 19.5 },
 		],
-		parkTo: 8,
+		parkTo: 7,
 	}, // 34
 	{
 		x: 43.5,
@@ -269,7 +269,6 @@ const path: {
 			{ x: 31.5, y: 0, z: 22.5 },
 			{ x: 25, y: 0, z: 22.5 },
 		],
-		parkTo: 34
 	}, // 38
 	{
 		x: 20,
@@ -280,36 +279,36 @@ const path: {
 			{ x: 20, y: 0, z: 22.5 },
 			{ x: 20, y: 0, z: 35 },
 		],
-		parkTo: 35
+		parkTo: 34
 	}, // 39
-	{ x: 20, y: 0, z: 39.5, parkTo: 36 }, // 40
-	{ x: 20, y: 0, z: 44.5, parkTo: 37 }, // 41
-	{ x: 20, y: 0, z: 50, parkTo: 38 }, // 42
-	{ x: 20, y: 0, z: 54.5, parkTo: 39 }, // 43
-	{ x: 20, y: 0, z: 59.5, parkTo: 40 }, // 44
-	{ x: 20, y: 0, z: 65, parkTo: 41 }, // 45
-	{ x: 20, y: 0, z: 69.5, parkTo: 42 }, // 46
-	{ x: 20, y: 0, z: 74.5, parkTo: 43 }, // 47
-	{ x: 20, y: 0, z: 80, parkTo: 44 }, // 48
-	{ x: 20, y: 0, z: 84.5, parkTo: 45 }, // 49
-	{ x: 20, y: 0, z: 89.5, parkTo: 46 }, // 50
+	{ x: 20, y: 0, z: 39.5, parkTo: 35 }, // 40
+	{ x: 20, y: 0, z: 44.5, parkTo: 36 }, // 41
+	{ x: 20, y: 0, z: 50, parkTo: 37 }, // 42
+	{ x: 20, y: 0, z: 54.5, parkTo: 38 }, // 43
+	{ x: 20, y: 0, z: 59.5, parkTo: 39 }, // 44
+	{ x: 20, y: 0, z: 65, parkTo: 40 }, // 45
+	{ x: 20, y: 0, z: 69.5, parkTo: 41 }, // 46
+	{ x: 20, y: 0, z: 74.5, parkTo: 42 }, // 47
+	{ x: 20, y: 0, z: 80, parkTo: 43 }, // 48
+	{ x: 20, y: 0, z: 84.5, parkTo: 44 }, // 49
+	{ x: 20, y: 0, z: 89.5, parkTo: 45 }, // 50
 	{
 		x: 20,
 		y: 0,
 		z: 96,
-		parkTo: 47
+		parkTo: 46
 	}, // 51
 	{
 		x: 20,
 		y: 0,
 		z: 102,
-		parkTo: 48
+		parkTo: 47
 	}, // 52
 	{
 		x: 20,
 		y: 0,
 		z: 109,
-		parkTo: 49
+		parkTo: 48
 	}, // 53
 	{
 		x: 20,
