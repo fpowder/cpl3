@@ -1,8 +1,9 @@
 import { radToDeg } from 'three/src/math/MathUtils';
-import { Vector3, BoxGeometry, MeshLambertMaterial, Mesh } from 'three';
+import { Vector3, BoxGeometry, MeshLambertMaterial, Mesh, QuadraticBezierCurve3 } from 'three';
 import { cpl3Scene } from './Basic';
 import parkingAreaCords from '../config/parkingAreaCords';
-import { workerData } from 'worker_threads';
+
+const bezierSegments: number = 30;
 
 export const getPaCord = (paNum: number): {x: number, y: number, z: number} | null => {
 	if(parkingAreaCords[paNum]) {
@@ -161,4 +162,17 @@ export const pathDivide = (segmentCnt: number, startPos: Vector3, endPos: Vector
 		points.push(point);
 	}
 	return points;
+}
+
+export const bezierPoints = (edges: {x: number, y: number, z: number}[] | Vector3[]) => {
+	let bezierPoints: Vector3[] = [];
+	for(let i = 0; i < edges.length; i+=3){
+		const quadrarticBezier = new QuadraticBezierCurve3(
+            new Vector3(edges[i].x, edges[i].y, edges[i].z),
+            new Vector3(edges[i+1].x, edges[i+1].y, edges[i+1].z),
+            new Vector3(edges[i+2].x, edges[i+2].y, edges[i+2].z)
+        );
+		bezierPoints.push(...quadrarticBezier.getPoints(bezierSegments));
+	}
+	return bezierPoints;
 }
