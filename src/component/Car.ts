@@ -8,7 +8,7 @@ import path from '../config/path';
 // current cpl status
 import { paStatus } from "../singleton/paStatus";
 
-import { vec3FromObj, drawBezierPath, getPaCord, getPAVerticalLength, correctDirection, pathDivide } from '../module/Util';
+import { vec3FromObj, drawBezierPath, getPaCord, getPAVerticalLength, correctDirection, pathDivide, bezierPoints } from '../module/Util';
 import parkingAreaCords from '../config/parkingAreaCords';
 
 export default class Car {
@@ -24,7 +24,7 @@ export default class Car {
     stdDistance: number = 4;
     stdSpeed: number;
 
-    bezierPoints: number = 30;
+    // bezierPoints: number = 30;
     startZOffset: number = 20;
 
     act: string = 'entrance'; // entrance, moving, parking, exit
@@ -171,7 +171,12 @@ export default class Car {
             const eachPath = path[i];
 
             if(eachPath.quadraticPath) {
-                this.bezierPath(this.movePathTl, eachPath.quadraticPath, this.mesh.position);
+                this.bezierPath(
+					this.movePathTl, 
+					eachPath.quadraticPath, 
+					this.mesh.position,
+					() => { this.parkingPath(eachPath); }
+				);
 
             } else {
                 this.movePathTl.to(
@@ -228,7 +233,7 @@ export default class Car {
         // determine park action
         const chance = Math.random() * 100;
         if(
-            eachPath.parkTo === 28
+            eachPath.parkTo === 51
             &&
             !paStatus[eachPath.parkTo].parked
             // &&
@@ -307,7 +312,7 @@ export default class Car {
             this.bezierPath(
                 this.parkingTl,
                 [initialPosition, upperPosition, rightUpperPostion],
-                this.mesh.position
+                this.mesh.position,
             );
 
             this.bezierPath(
@@ -315,12 +320,12 @@ export default class Car {
                 [rightUpperPostion, nUpperPosition, nRightUpperPosition],
                 this.mesh.position,
                 () => {
-                    this.direction = 'backward';
+					this.direction = 'backward';
                     this.parkingTl.pause();
                     setTimeout(() => {
                         this.parkingTl.resume();
                     }, 1000);
-                }
+                },
             );
             
             const backVec = directionVec
@@ -334,7 +339,7 @@ export default class Car {
             this.bezierPath(
                 this.parkingTl,
                 [nRightUpperPosition, backwardPosition, initialPosition],
-                this.mesh.position
+                this.mesh.position,
             );
 
             const paCenter = getPaCord(parkTo);
@@ -366,7 +371,6 @@ export default class Car {
 						})()}`)
                     },
                     onComplete: () => {
-						
 
                         // if move forward animation is active make it stop
                         
@@ -377,16 +381,18 @@ export default class Car {
 						 * process 3. 출차 구역까지 이동하는 path지정
 						 */
 						// process 1
+						this.direction = 'forward';
 						const meshDirection = this.mesh.getWorldDirection(new Vector3())
 												.clone()
 												.normalize();
 
 						const wayout1Pos = this.mesh.position
-							.clone()
-							.add(
-								meshDirection.multiplyScalar(getPAVerticalLength(parkTo) / 2)
-							)
-
+											.clone()
+											.add(
+												meshDirection.multiplyScalar(getPAVerticalLength(parkTo) / 2)
+											);
+						
+						// process 2
 						this.wayoutTl.to(
 							this.mesh.position,
 							{
@@ -395,60 +401,66 @@ export default class Car {
 								y: wayout1Pos.y,
 								z: wayout1Pos.z,
 								onComplete: () => {
-
 									// process 2
 									console.log('world vector3', this.mesh.getWorldDirection(new Vector3()).clone().normalize());
 
 									const wayoutPath = parkingAreaCords[parkTo].wayoutPath;
 									const wayoutPos = new Vector3(path[wayoutPath].x, path[wayoutPath].y, path[wayoutPath].z);
 									
-									let orthogonalDirection =	
+									let worldVector =	
 										correctDirection(this.mesh.getWorldDirection(new Vector3()).clone());
-									console.log('orthogonalDirection', orthogonalDirection);
+									console.log('worldVector', worldVector);
 
 									const points = pathDivide(2, this.mesh.position, wayoutPos);
 									console.log('devided points', points);
 
 									let startPosition = this.mesh.position.clone();
 									console.log('startPosition', startPosition);
-									const bezierEdges = [];
-									bezierEdges.push(startPosition);
+									
+									const wayoutBezierEdges = [];
+									wayoutBezierEdges.push(startPosition);
 
 									let next: Vector3;
 									let add: Vector3;
-									
 									for(let i = 1; i < points.length; i++) {
-										if(i === 1) { 
-											if(orthogonalDirection.z !== 0) {
-												add =  new Vector3(0, 0, Math.abs(points[i].z - startPosition.z) * orthogonalDirection.z);
+										
+										if(i === 1) {
+
+											if(worldVector.z !== 0) {
+												add =  new Vector3(0, 0, Math.abs(points[i].z - startPosition.z) * worldVector.z);
 											} else {
-												add =  new Vector3(Math.abs(points[i].x - startPosition.x) * orthogonalDirection.x, 0, 0);
+												add =  new Vector3(Math.abs(points[i].x - startPosition.x) * worldVector.x, 0, 0);
 											}
-											 
+											
 											next = startPosition.clone().add(add);
-											orthogonalDirection = points[i].clone().sub(next.clone()).normalize();
-											bezierEdges.push(next);
+											worldVector = points[i].clone().sub(next.clone()).normalize();
+											wayoutBezierEdges.push(next);
 
 										} else {
-											if(orthogonalDirection.z !== 0) {
-												add = new Vector3(0, 0, Math.abs(points[i-1].z - next.z) * orthogonalDirection.z * 2);
+											if(worldVector.z !== 0) {
+												add = new Vector3(0, 0, Math.abs(points[i-1].z - next.z) * worldVector.z * 2);
 											} else {
-												add = new Vector3(Math.abs(points[i-1].x - next.x) * orthogonalDirection.x * 2, 0, 0);
+												add = new Vector3(Math.abs(points[i-1].x - next.x) * worldVector.x * 2, 0, 0);
 											}
-
-											next = next.clone().add(add);
-											orthogonalDirection = points[i].clone().sub(next.clone()).normalize();
 											
-											bezierEdges.push(points[i-1]);
-											bezierEdges.push(next);
+											next = next.clone().add(add);
+											worldVector = points[i].clone().sub(next.clone()).normalize();
 
+											wayoutBezierEdges.push(points[i-1]);
+											wayoutBezierEdges.push(points[i-1]);
+											wayoutBezierEdges.push(next);
 										}
 									} //for
-									bezierEdges.push(points[points.length - 1]);
-									console.log('bezierEdges : ', bezierEdges);
-								}
+									wayoutBezierEdges.push(points[points.length - 1]);
+									console.log('wayoutBezierEdges : ', wayoutBezierEdges);
+
+									this.bezierPath(this.wayoutTl, wayoutBezierEdges, this.mesh.position);
+												
+								} // onComplete
 							}
 						); //wayoutTl.to
+
+						
                     }
                 }
             );
@@ -457,19 +469,21 @@ export default class Car {
     }
 
     bezierPath(
-        timeline: gsap.core.Timeline, 
+        timeline: gsap.core.Timeline,
         quadraticPath: {x: number, y: number, z: number}[] | Vector3[],
         meshPosition: Vector3,
-        onComplete?: gsap.Callback,
+        onComplete?: gsap.Callback
     ): void {
 
-        const quadrarticBezier = new QuadraticBezierCurve3(
-            new Vector3(quadraticPath[0].x, quadraticPath[0].y, quadraticPath[0].z),
-            new Vector3(quadraticPath[1].x, quadraticPath[1].y, quadraticPath[1].z),
-            new Vector3(quadraticPath[2].x, quadraticPath[2].y, quadraticPath[2].z)
-        );
+        // const quadrarticBezier = new QuadraticBezierCurve3(
+        //     new Vector3(quadraticPath[0].x, quadraticPath[0].y, quadraticPath[0].z),
+        //     new Vector3(quadraticPath[1].x, quadraticPath[1].y, quadraticPath[1].z),
+        //     new Vector3(quadraticPath[2].x, quadraticPath[2].y, quadraticPath[2].z)
+        // );
         
-        const points: Vector3[] = quadrarticBezier.getPoints(this.bezierPoints);
+        // const points: Vector3[] = quadrarticBezier.getPoints(this.bezierPoints);
+		
+		const points: Vector3[] = bezierPoints(quadraticPath);
 
         // draw quadratic bezier points
         drawBezierPath(points);
@@ -490,6 +504,7 @@ export default class Car {
 						return duration;
 					})(),
 					onStart: () => {
+						// determine bezier path direction
 						if(this.direction === 'backward') {
 							const currentPos = this.mesh.position.clone();
 							this.mesh.lookAt(
@@ -506,13 +521,14 @@ export default class Car {
 					},
 					onComplete: () => {
 						// onComplete event triggiered when last bazier timeline complete
-						if(i == points.length - 2) {
+						if(i == points.length - 2 && onComplete) {
 							// onComplete ? onComplete() : (() => { return; });
-							onComplete && onComplete();
+							// onComplete && onComplete();
+							onComplete();
 						}
-					}
+					} // onComplete
 				}
-			);
+			); // timeline.to
         }
 
     }
@@ -535,7 +551,7 @@ export default class Car {
             if(item.object.parent?.parent?.name === 'car') console.log('distance with front car', item.distance);
 
             if(
-                item.object.parent?.parent?.name === 'car' 
+                item.object.parent?.parent?.name === 'car'
                 &&
                 item.distance < 5
                 &&
@@ -549,9 +565,9 @@ export default class Car {
                 break;
             } else if(
                 item.object.parent?.parent?.name !== 'car' 
-                && 
+                &&
                 clock.getElapsedTime() - this.stoppedTime > 0.6
-                && 
+                &&
                 item.distance >= 5
             ) {    
                 this.timeline.resume();
