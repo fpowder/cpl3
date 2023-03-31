@@ -2,6 +2,7 @@ import { radToDeg } from 'three/src/math/MathUtils';
 import { Vector3, BoxGeometry, MeshLambertMaterial, Mesh } from 'three';
 import { cpl3Scene } from './Basic';
 import parkingAreaCords from '../config/parkingAreaCords';
+import { workerData } from 'worker_threads';
 
 export const getPaCord = (paNum: number): {x: number, y: number, z: number} | null => {
 	if(parkingAreaCords[paNum]) {
@@ -141,22 +142,16 @@ export const bezierPath = (
 }
 
 /**
- * 여러개의 직교 좌표계를 활용하여 bezier path를 만들고자 할경우, 
- * 수평 또는 수직 방향으로 바라보고있는 mesh의 방향 벡터를 정한다.
+ * corrent worldDirection Vector
+ * ex) {x: -0.003, y: 0, z: -0.9999} => {x: 0, y: 0, z: -1}
  * @returns Vector3 Object
  */
-export const getOrthogonalDirection = (worldDirection: Vector3): Vector3 => {
-	const x = worldDirection.x;
-	const z = worldDirection.z;
-	if(Math.abs(x) > Math.abs(z)) {
-		if(x > 0) {
-			return new Vector3(1, 0, 0);
-		} else return new Vector3(-1, 0, 0);
-	} else {
-		if(z > 0) {
-			return new Vector3(0, 0, 1);
-		} else return new Vector3(0, 0, -1);
-	}
+export const correctDirection = (vector3: Vector3): Vector3 => {
+	const x = vector3.x;
+	const y = vector3.y;
+	const z = vector3.z;
+
+	return new Vector3(Math.round(x), Math.round(y), Math.round(z));
 }
 
 export const pathDivide = (segmentCnt: number, startPos: Vector3, endPos: Vector3): Vector3[] => {
@@ -166,17 +161,4 @@ export const pathDivide = (segmentCnt: number, startPos: Vector3, endPos: Vector
 		points.push(point);
 	}
 	return points;
-}
-
-export const BezierPath = (
-	pointsCnt: number,
-	startCord: Vector3,
-	endCord: Vector3,
-	segments: number,
-	mesh: Mesh
-) => {
-
-	const currentPosition = mesh.position.clone();
-	
-
 }

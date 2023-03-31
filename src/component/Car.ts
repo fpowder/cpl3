@@ -8,9 +8,9 @@ import path from '../config/path';
 // current cpl status
 import { paStatus } from "../singleton/paStatus";
 
-import { vec3FromObj, drawBezierPath, getPaCord, getPAVerticalLength, getOrthogonalDirection, pathDivide } from '../module/Util';
+import { vec3FromObj, drawBezierPath, getPaCord, getPAVerticalLength, correctDirection, pathDivide } from '../module/Util';
 import parkingAreaCords from '../config/parkingAreaCords';
-import { start } from 'repl';
+
 export default class Car {
 
     mesh: Mesh;
@@ -228,7 +228,7 @@ export default class Car {
         // determine park action
         const chance = Math.random() * 100;
         if(
-            eachPath.parkTo === 51
+            eachPath.parkTo === 28
             &&
             !paStatus[eachPath.parkTo].parked
             // &&
@@ -245,7 +245,7 @@ export default class Car {
             paStatus[eachPath.parkTo].parked = true;
 
             const parkTo = eachPath.parkTo;
-            const parkingScalar = 3;
+            const parkingScalar = 2;
             const initialPosition = this.mesh.position.clone();
             const directionVec = this.mesh.getWorldDirection(new Vector3()).clone();
 
@@ -373,7 +373,7 @@ export default class Car {
                         // way out path start after some seconds
 						/**
 						 * process 1. 주차 구역의 세로 절반 길이만큼 직선으로 이동
-						 * process 2. 주차 구역의 wayout path 좌표로 bezier path 또는 circle경로로 이동
+						 * process 2. 주차 구역의 wayout path 좌표로 bezier path 경로로 이동
 						 * process 3. 출차 구역까지 이동하는 path지정
 						 */
 						// process 1
@@ -395,13 +395,15 @@ export default class Car {
 								y: wayout1Pos.y,
 								z: wayout1Pos.z,
 								onComplete: () => {
+
+									// process 2
 									console.log('world vector3', this.mesh.getWorldDirection(new Vector3()).clone().normalize());
 
 									const wayoutPath = parkingAreaCords[parkTo].wayoutPath;
 									const wayoutPos = new Vector3(path[wayoutPath].x, path[wayoutPath].y, path[wayoutPath].z);
 									
 									let orthogonalDirection =	
-										getOrthogonalDirection(this.mesh.getWorldDirection(new Vector3()).clone());
+										correctDirection(this.mesh.getWorldDirection(new Vector3()).clone());
 									console.log('orthogonalDirection', orthogonalDirection);
 
 									const points = pathDivide(2, this.mesh.position, wayoutPos);
