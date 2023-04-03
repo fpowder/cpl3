@@ -1,5 +1,5 @@
 import { cpl3Scene, gltfLoader, gsap, clock } from '../module/Basic';
-import { AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial, QuadraticBezierCurve3, Vector3, Raycaster, Object3D } from 'three';
+import { AnimationMixer, Mesh, Scene, AnimationAction, BoxGeometry, MeshLambertMaterial, QuadraticBezierCurve3, Vector3, Raycaster, Object3D, Vector } from 'three';
 import carGlb from '../asset/resource/models/car.glb';
 
 // ParkingArea move path import
@@ -400,73 +400,32 @@ export default class Car {
 								y: wayout1Pos.y,
 								z: wayout1Pos.z,
 								onComplete: () => {
-									// process 2
 									console.log('world vector3', this.mesh.getWorldDirection(new Vector3()).clone().normalize());
 
-									const wayoutPath = parkingAreaCords[parkTo].wayoutPath;
-									const wayoutPos = new Vector3(path[wayoutPath].x, path[wayoutPath].y, path[wayoutPath].z);
+									const wayoutPath: number = parkingAreaCords[parkTo].wayoutPath;
+									const wayoutPos: Vector3 = new Vector3(path[wayoutPath].x, path[wayoutPath].y, path[wayoutPath].z);
 									
-									let worldVector =	
-										correctDirection(this.mesh.getWorldDirection(new Vector3()).clone());
-									console.log('worldVector', worldVector);
-
-									const points = pathDivide(2, this.mesh.position, wayoutPos);
-									console.log('devided points', points);
-
-									let startPosition = this.mesh.position.clone();
-									console.log('startPosition', startPosition);
-									
-									const wayoutBezierEdges = [];
-									wayoutBezierEdges.push(startPosition);
-
-									let next: Vector3;
-									let add: Vector3;
-									for(let i = 1; i < points.length; i++) {
-										
-										if(i === 1) {
-
-											if(worldVector.z !== 0) {
-												add =  new Vector3(0, 0, Math.abs(points[i].z - startPosition.z) * worldVector.z);
-											} else {
-												add =  new Vector3(Math.abs(points[i].x - startPosition.x) * worldVector.x, 0, 0);
-											}
-											
-											next = startPosition.clone().add(add);
-											worldVector = points[i].clone().sub(next.clone()).normalize();
-											wayoutBezierEdges.push(next);
-
-										} else {
-											if(worldVector.z !== 0) {
-												add = new Vector3(0, 0, Math.abs(points[i-1].z - next.z) * worldVector.z * 2);
-											} else {
-												add = new Vector3(Math.abs(points[i-1].x - next.x) * worldVector.x * 2, 0, 0);
-											}
-											
-											next = next.clone().add(add);
-											worldVector = points[i].clone().sub(next.clone()).normalize();
-
-											wayoutBezierEdges.push(points[i-1]);
-											wayoutBezierEdges.push(points[i-1]);
-											wayoutBezierEdges.push(next);
-										}
-									} //for
-									wayoutBezierEdges.push(points[points.length - 1]);
-									console.log('wayoutBezierEdges : ', wayoutBezierEdges);
+									const bezierEdges: Vector3[] = this.getBezierEdges(wayoutPos, 2);
                                     
                                     // wayout bezier path
-									this.bezierPath(this.wayoutTl, wayoutBezierEdges, this.mesh.position);
+									this.bezierPath(this.wayoutTl, bezierEdges, this.mesh.position);
 
                                     // wayout move path
                                     this.mesh.userData.act = 'moving';
 
-                                    for(let i = wayoutPath + 1; i < 33; i++) {
+                                    // process 3
+                                    for(let i = wayoutPath + 1; i < 35; i++) {
                                         const eachPath = path[i];
 
                                         if(eachPath.quadraticPath) {
                                             this.bezierPath(
                                                 this.wayoutTl, 
                                                 eachPath.quadraticPath, 
-                                                this.mesh.position
+                                                this.mesh.position,
+                                                () => {
+                                                    const wayOutBezierEdges: Vector3[] = this.getBezierEdges(vec3FromObj(path[36]), 2);
+                                                    this.bezierPath(this.wayoutTl, wayOutBezierEdges, this.mesh.position);
+                                                }
                                             );
 
                                         } else {
@@ -495,23 +454,26 @@ export default class Car {
                                                         console.log('onComplete this.mesh.getWorldDirection', this.mesh.getWorldDirection(new Vector3()));
                                                         
                                                         
+                                                        
                                                     } // onComplete
                                                 }
-                                            ); // gsap to
+                                            ); // wayoutTl (wayout timeline)
                                         } // else
 
-                                    }
+                                    } // for
 
+                                   
 
 												
 								} // onComplete
 							}
 						); //wayoutTl.to
+                        
 
 						
                     }
                 }
-            );
+            ); // parkingTl
 
         } // if
     }
@@ -579,6 +541,60 @@ export default class Car {
 			); // timeline.to
         }
 
+    }
+
+    getBezierEdges(endPoint: Vector3, segmentCnt: number): Vector3[] {
+
+        const wayoutPos = new Vector3(endPoint.x, endPoint.y, endPoint.z);
+        
+        let worldVector =	
+            correctDirection(this.mesh.getWorldDirection(new Vector3()).clone());
+        console.log('worldVector', worldVector);
+
+        const points = pathDivide(segmentCnt, this.mesh.position, wayoutPos);
+        console.log('devided points', points);
+
+        let startPosition = this.mesh.position.clone();
+        console.log('startPosition', startPosition);
+        
+        const bezierEdges = [];
+        bezierEdges.push(startPosition);
+
+        let next: Vector3;
+        let add: Vector3;
+        for(let i = 1; i < points.length; i++) {
+            
+            if(i === 1) {
+
+                if(worldVector.z !== 0) {
+                    add =  new Vector3(0, 0, Math.abs(points[i].z - startPosition.z) * worldVector.z);
+                } else {
+                    add =  new Vector3(Math.abs(points[i].x - startPosition.x) * worldVector.x, 0, 0);
+                }
+                
+                next = startPosition.clone().add(add);
+                worldVector = points[i].clone().sub(next.clone()).normalize();
+                bezierEdges.push(next);
+
+            } else {
+                if(worldVector.z !== 0) {
+                    add = new Vector3(0, 0, Math.abs(points[i-1].z - next.z) * worldVector.z * 2);
+                } else {
+                    add = new Vector3(Math.abs(points[i-1].x - next.x) * worldVector.x * 2, 0, 0);
+                }
+                
+                next = next.clone().add(add);
+                worldVector = points[i].clone().sub(next.clone()).normalize();
+
+                bezierEdges.push(points[i-1]);
+                bezierEdges.push(points[i-1]);
+                bezierEdges.push(next);
+            }
+        } //for
+        bezierEdges.push(points[points.length - 1]);
+        console.log('bezierEdges : ', bezierEdges);
+
+        return bezierEdges;
     }
 
     sensorRay(): any {
