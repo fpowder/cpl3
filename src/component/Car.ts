@@ -105,7 +105,6 @@ export default class Car {
 
                 // entrance animation start
                 this.moveEntrancePath();
-                
             }
         );
     }
@@ -218,7 +217,7 @@ export default class Car {
                         } // onComplete
                     }
                 ); // gsap to
-            }
+            } // else
         } // for
 
     } // movePath
@@ -453,8 +452,57 @@ export default class Car {
 									} //for
 									wayoutBezierEdges.push(points[points.length - 1]);
 									console.log('wayoutBezierEdges : ', wayoutBezierEdges);
-
+                                    
+                                    // wayout bezier path
 									this.bezierPath(this.wayoutTl, wayoutBezierEdges, this.mesh.position);
+
+                                    // wayout move path
+                                    this.mesh.userData.act = 'moving';
+
+                                    for(let i = wayoutPath + 1; i < 33; i++) {
+                                        const eachPath = path[i];
+
+                                        if(eachPath.quadraticPath) {
+                                            this.bezierPath(
+                                                this.wayoutTl, 
+                                                eachPath.quadraticPath, 
+                                                this.mesh.position
+                                            );
+
+                                        } else {
+                                            this.wayoutTl.to(
+                                                this.mesh.position,
+                                                {
+                                                    ease: 'none',
+                                                    x: eachPath.x,
+                                                    y: 0,
+                                                    z: eachPath.z,  
+                                                    duration: (() => {
+
+                                                        const dist = vec3FromObj(path[i]).distanceTo(vec3FromObj(path[i-1]));
+                                                        const basicDuration = this.stdDistance / this.stdSpeed;
+                                                        return basicDuration * ( dist / this.stdDistance );
+
+                                                    })(),
+                                                    onStart: () => {
+                                                        const nextPath = new Vector3(path[i].x, path[i].y, path[i].z);
+                                                        this.mesh.lookAt(nextPath);
+                                                    },
+                                                    onUpdate: () => {
+                                                        console.log('onUpdate this.mesh.getWorldDirection', this.mesh.getWorldDirection(new Vector3()))
+                                                    },
+                                                    onComplete: () => {
+                                                        console.log('onComplete this.mesh.getWorldDirection', this.mesh.getWorldDirection(new Vector3()));
+                                                        
+                                                        
+                                                    } // onComplete
+                                                }
+                                            ); // gsap to
+                                        } // else
+
+                                    }
+
+
 												
 								} // onComplete
 							}
