@@ -6,7 +6,8 @@ const parkingAreaCords: {
 			start: [number, number],
 			vector: [number, number]
 		},
-		wayoutPath? : number
+		wayoutPath? : number,
+        wayoutCurveCnt?: number
 	}
 } = {
     1: {
@@ -438,7 +439,8 @@ const parkingAreaCords: {
             start: [23, 106],
             vector: [10, 6]
         },
-		wayoutPath: 13
+		wayoutPath: 13,
+        wayoutCurveCnt: 1
     },
     49: {
         group: 'middle',
@@ -447,7 +449,8 @@ const parkingAreaCords: {
             start: [23, 112],
             vector: [10, 5]
         },
-		wayoutPath: 12
+		wayoutPath: 12,
+        wayoutCurveCnt: 1
     },
     50: {
         group: 'bottom',
@@ -456,7 +459,7 @@ const parkingAreaCords: {
             start: [11, 130],
             vector: [6, 10]
         },
-		wayoutPath: 10
+		wayoutPath: 10,
     },
     51: {
         group: 'bottom',
@@ -465,7 +468,8 @@ const parkingAreaCords: {
             start: [17, 130],
             vector: [6, 10]
         },
-		wayoutPath: 10
+		wayoutPath: 10,
+        wayoutCurveCnt: 2
     },
     52: {
         group: 'bottom',
@@ -474,7 +478,8 @@ const parkingAreaCords: {
             start: [24, 130],
             vector: [5, 10]
         },
-		wayoutPath: 9
+		wayoutPath: 9,
+        wayoutCurveCnt: 1
     },
     53: {
         group: 'bottom',
@@ -483,7 +488,8 @@ const parkingAreaCords: {
             start: [29, 130],
             vector: [4, 10]
         },
-		wayoutPath: 8
+		wayoutPath: 8,
+        wayoutCurveCnt: 1
     },
     54: {
         group: 'bottom',
@@ -492,7 +498,8 @@ const parkingAreaCords: {
             start: [34, 130],
             vector: [5, 10]
         },
-		wayoutPath: 7
+		wayoutPath: 7,
+        wayoutCurveCnt: 1
     },
     55: {
         group: 'bottom',
@@ -501,7 +508,8 @@ const parkingAreaCords: {
             start: [39, 130],
             vector: [5, 10]
         },
-		wayoutPath: 6
+		wayoutPath: 6,
+        wayoutCurveCnt: 1
     },
     56: {
         group: 'bottom',
@@ -510,7 +518,8 @@ const parkingAreaCords: {
             start: [45, 130],
             vector: [5, 10]
         },
-		wayoutPath: 5
+		wayoutPath: 5,
+        wayoutCurveCnt: 1
     },
     57: {
         group: 'bottom',
@@ -519,7 +528,8 @@ const parkingAreaCords: {
             start: [50, 130],
             vector: [5, 10]
         },
-		wayoutPath: 4
+		wayoutPath: 4,
+        wayoutCurveCnt: 1
     },   
 }
 
