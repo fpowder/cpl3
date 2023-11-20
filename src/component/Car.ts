@@ -232,7 +232,7 @@ export default class Car {
         // determine park action
         const chance = Math.random() * 100;
         if(
-            eachPath.parkTo === 51
+            eachPath.parkTo === 48
             &&
             !paStatus[eachPath.parkTo].parked
             // &&
@@ -403,9 +403,11 @@ export default class Car {
 									console.log('world vector3', this.mesh.getWorldDirection(new Vector3()).clone().normalize());
 
 									const wayoutPath: number = parkingAreaCords[parkTo].wayoutPath;
+                                    const wayoutCurveCnt: number = parkingAreaCords[parkTo].wayoutCurveCnt;
+
 									const wayoutPos: Vector3 = new Vector3(path[wayoutPath].x, path[wayoutPath].y, path[wayoutPath].z);
 									
-									const bezierEdges: Vector3[] = this.getBezierEdges(wayoutPos, 2);
+									const bezierEdges: Vector3[] = this.getBezierEdges(wayoutPos, wayoutCurveCnt);
                                     
                                     // wayout bezier path
 									this.bezierPath(this.wayoutTl, bezierEdges, this.mesh.position);
@@ -423,10 +425,38 @@ export default class Car {
                                                 eachPath.quadraticPath, 
                                                 this.mesh.position,
                                                 () => {
-                                                    const wayOutBezierEdges: Vector3[] = this.getBezierEdges(vec3FromObj(path[36]), 2);
-                                                    this.bezierPath(this.wayoutTl, wayOutBezierEdges, this.mesh.position);
+                                                    if(i !== 34) return;
+                                                    const wayOutBezierEdges: Vector3[] = this.getBezierEdges(vec3FromObj({x: 38.5, y: 0, z: 42}), 2);
+                                                    this.bezierPath(
+                                                        this.wayoutTl, 
+                                                        wayOutBezierEdges, 
+                                                        this.mesh.position,
+                                                        () => {
+                                                            this.wayoutTl.to(
+                                                                this.mesh.position,
+                                                                {
+                                                                    ease: 'none',
+                                                                    x: 38.5,
+                                                                    y: 0,
+                                                                    z: 55,  
+                                                                    duration: (() => {
+                
+                                                                        const dist = 13;
+                                                                        const basicDuration = this.stdDistance / this.stdSpeed;
+                                                                        return basicDuration * ( dist / this.stdDistance );
+                
+                                                                    })(),
+                                                                    onComplete: () => {
+                                                                        this.mesh.remove();
+                                                                        this.mesh.clear();
+                                                                    }
+                                                                }
+                                                            );
+                                                        }
+                                                    );
                                                 }
                                             );
+                                            continue;
 
                                         } else {
                                             this.wayoutTl.to(
@@ -462,9 +492,6 @@ export default class Car {
 
                                     } // for
 
-                                   
-
-												
 								} // onComplete
 							}
 						); //wayoutTl.to
