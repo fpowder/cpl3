@@ -244,7 +244,7 @@ export default class Car {
             // &&
             // chance > 50
         ) {	
-
+            this.currentSpeed = this.curveSpeed;
             console.log('park to: ', eachPath.parkTo)
             // this.currentSpeed = this.curveSpeed;
             // set current act to 'parking'
@@ -376,7 +376,9 @@ export default class Car {
 						})()}`)
                     },
                     onComplete: () => {
-
+                        // random parking time -> 1 to 11 seconds
+                        const parkingTime = Math.round(Math.random() * 10) + 1;
+                        this.wayoutTl.to(this.mesh.position, {ease: 'none', duration: parkingTime});
                         // if move forward animation is active make it stop
                         
                         // way out path start after some seconds
@@ -397,6 +399,9 @@ export default class Car {
 												meshDirection.multiplyScalar(getPAVerticalLength(parkTo) / 2)
 											);
 						
+                        // back to straight speed;
+                        this.currentSpeed = this.straightSpeed;
+
 						// process 2
 						this.wayoutTl.to(
 							this.mesh.position,
