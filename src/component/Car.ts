@@ -22,7 +22,9 @@ export default class Car {
     backwardAction: AnimationAction;
 
     stdDistance: number = 4;
-    stdSpeed: number;
+    currentSpeed: number;
+    straightSpeed: number;
+    curveSpeed: number;
 
     // bezierPoints: number = 30;
     startZOffset: number = 20;
@@ -64,7 +66,9 @@ export default class Car {
     reversing: boolean = false;
 
     constructor(cpl3Scene: Scene, stdSpeed: number) {
-        this.stdSpeed = stdSpeed;
+        this.currentSpeed = stdSpeed;
+        this.curveSpeed = stdSpeed * 0.6;
+        this.straightSpeed = stdSpeed;
         gltfLoader.load(
             carGlb,
             (gltf) => {
@@ -124,7 +128,7 @@ export default class Car {
                 z: path[0].z,
                 duration: (() => {
                     const dist = this.startZOffset;
-                    const basicDuration = this.stdDistance / this.stdSpeed;
+                    const basicDuration = this.stdDistance / this.currentSpeed;
 
                     const finalDuration = basicDuration * ( dist / this.stdDistance );
                     return finalDuration;
@@ -170,6 +174,7 @@ export default class Car {
             const eachPath = path[i];
 
             if(eachPath.quadraticPath) {
+                this.currentSpeed = this.curveSpeed;
                 this.bezierPath(
 					this.movePathTl, 
 					eachPath.quadraticPath, 
@@ -178,6 +183,7 @@ export default class Car {
 				);
 
             } else {
+                this.currentSpeed = this.straightSpeed;
                 this.movePathTl.to(
                     this.mesh.position,
                     {
@@ -188,7 +194,7 @@ export default class Car {
                         duration: (() => {
 
                             const dist = vec3FromObj(path[i]).distanceTo(vec3FromObj(path[i-1]));
-                            const basicDuration = this.stdDistance / this.stdSpeed;
+                            const basicDuration = this.stdDistance / this.currentSpeed;
                             return basicDuration * ( dist / this.stdDistance );
 
                         })(),
@@ -197,10 +203,10 @@ export default class Car {
 							this.mesh.lookAt(nextPath);
 						},
                         onUpdate: () => {
-							console.log('onUpdate this.mesh.getWorldDirection', this.mesh.getWorldDirection(new Vector3()))
+							// console.log('onUpdate this.mesh.getWorldDirection', this.mesh.getWorldDirection(new Vector3()))
                         },
                         onComplete: () => {
-							console.log('onComplete this.mesh.getWorldDirection', this.mesh.getWorldDirection(new Vector3()));
+							// console.log('onComplete this.mesh.getWorldDirection', this.mesh.getWorldDirection(new Vector3()));
 							
                             // 주차장 이동중 주차여부를 결정하고 주차 애니매이션을 실행
 							this.parkingPath(eachPath);
@@ -232,7 +238,7 @@ export default class Car {
         // determine park action
         const chance = Math.random() * 100;
         if(
-            eachPath.parkTo === 48
+            eachPath.parkTo === 31
             &&
             !paStatus[eachPath.parkTo].parked
             // &&
@@ -240,7 +246,7 @@ export default class Car {
         ) {	
 
             console.log('park to: ', eachPath.parkTo)
-
+            // this.currentSpeed = this.curveSpeed;
             // set current act to 'parking'
             this.act = 'parking';
             // clear current timeline
@@ -352,7 +358,7 @@ export default class Car {
                     duration: (() => {
 
                         const dist = this.mesh.position.clone().distanceTo(vec3FromObj(paCenter));
-                        const basicDuration = this.stdDistance / this.stdSpeed;
+                        const basicDuration = this.stdDistance / this.currentSpeed;
                         const duration = basicDuration * ( dist / this.stdDistance );
 
                         return duration;
@@ -442,7 +448,7 @@ export default class Car {
                                                                     duration: (() => {
                 
                                                                         const dist = 13;
-                                                                        const basicDuration = this.stdDistance / this.stdSpeed;
+                                                                        const basicDuration = this.stdDistance / this.currentSpeed;
                                                                         return basicDuration * ( dist / this.stdDistance );
                 
                                                                     })(),
@@ -469,7 +475,7 @@ export default class Car {
                                                     duration: (() => {
 
                                                         const dist = vec3FromObj(path[i]).distanceTo(vec3FromObj(path[i-1]));
-                                                        const basicDuration = this.stdDistance / this.stdSpeed;
+                                                        const basicDuration = this.stdDistance / this.currentSpeed;
                                                         return basicDuration * ( dist / this.stdDistance );
 
                                                     })(),
@@ -535,7 +541,7 @@ export default class Car {
 					z: points[i].z,
 					duration: (() => {
 						const dist = points[i].distanceTo(points[i-1]);
-						const basicDuration = this.stdDistance / this.stdSpeed;
+						const basicDuration = this.stdDistance / this.currentSpeed;
 						const duration = basicDuration * ( dist / this.stdDistance );
 
 						return duration;
@@ -639,7 +645,7 @@ export default class Car {
         const intersects = this.frontSensorRay.intersectObjects(cpl3Scene.children);
         for(const item of intersects) {
             
-            if(item.object.parent?.parent?.name === 'car') console.log('distance with front car', item.distance);
+            // if(item.object.parent?.parent?.name === 'car') console.log('distance with front car', item.distance);
 
             if(
                 item.object.parent?.parent?.name === 'car'
