@@ -16,7 +16,9 @@ const parkingAreaCords: {
         cord: {
             start: [11, 2],
             vector: [6, 10]
-        }
+        },
+        wayoutPath: 30,
+        wayoutCurveCnt: 1
     },
     2: {
         group: 'top',
@@ -25,7 +27,8 @@ const parkingAreaCords: {
             start: [17, 2],
             vector: [6, 10]
         },
-		wayoutPath: 31
+		wayoutPath: 31,
+        wayoutCurveCnt: 1
     },
     3: {
         group: 'top',
@@ -34,7 +37,8 @@ const parkingAreaCords: {
             start: [24, 2],
             vector: [5, 10]
         },
-		wayoutPath: 32
+		wayoutPath: 32,
+        wayoutCurveCnt: 1
     },
     4: {
         group: 'top',
@@ -43,7 +47,9 @@ const parkingAreaCords: {
             start: [29, 2],
             vector: [5, 10]
         },
-		wayoutPath: 33
+		wayoutPath: 33,
+        wayoutCurveCnt: 1
+
     },
     5: {
         group: 'top',
@@ -52,7 +58,8 @@ const parkingAreaCords: {
             start: [35, 2],
             vector: [5, 10]
         },
-		wayoutPath: 34
+		wayoutPath: 34,
+        wayoutCurveCnt: 2,
     },
     6: {
         group: 'right',
@@ -61,7 +68,8 @@ const parkingAreaCords: {
             start: [47, 13],
             vector: [9, 4]
         },
-		wayoutPath: 34
+		wayoutPath: 34,
+        wayoutCurveCnt: 1
     },
     7: {
         group: 'right',
@@ -70,7 +78,8 @@ const parkingAreaCords: {
             start: [47, 17],
             vector: [9, 5]
         },
-		wayoutPath: 35
+		wayoutPath: 35,
+        wayoutCurveCnt: 1
     },
     8: {
         group: 'right',
@@ -79,7 +88,8 @@ const parkingAreaCords: {
             start: [47, 22],
             vector: [9, 5]
         },
-		wayoutPath: 36
+		wayoutPath: 36,
+        wayoutCurveCnt: 1
     },
     9: {
         group: 'right',
@@ -88,7 +98,7 @@ const parkingAreaCords: {
             start: [47, 27],
             vector: [9, 5]
         },
-		wayoutPath: 36
+		// wayoutPath: 36
     },
     10: {
         group: 'right',
@@ -115,7 +125,8 @@ const parkingAreaCords: {
             start: [1, 13],
             vector: [10, 4]
         },
-		wayoutPath: 30
+		wayoutPath: 30,
+        wayoutCurveCnt: 2,
     },
     13: {
         group: 'left',
@@ -124,7 +135,8 @@ const parkingAreaCords: {
             start: [1, 17],
             vector: [10, 5]
         },
-		wayoutPath: 30
+		wayoutPath: 30,
+        wayoutCurveCnt: 2
     },
     14: {
         group: 'left',
@@ -133,7 +145,8 @@ const parkingAreaCords: {
             start: [1, 22],
             vector: [10, 5]
         },
-		wayoutPath: 29
+		wayoutPath: 29,
+        wayoutCurveCnt: 1
     },
     15: {
         group: 'left',
@@ -142,7 +155,8 @@ const parkingAreaCords: {
             start: [1, 27],
             vector: [10, 5]
         },
-		wayoutPath: 28
+		wayoutPath: 28,
+        wayoutCurveCnt: 1
     },
     16: {
         group: 'left',
@@ -151,7 +165,8 @@ const parkingAreaCords: {
             start: [1, 33],
             vector: [10, 4]
         },
-		wayoutPath: 27
+		wayoutPath: 27,
+        wayoutCurveCnt: 1
     },
     17: {
         group: 'left',
@@ -160,7 +175,8 @@ const parkingAreaCords: {
             start: [1, 37],
             vector: [10, 5]
         },
-		wayoutPath: 26
+		wayoutPath: 26,
+        wayoutCurveCnt: 1
     },
     18: {
         group: 'left',
@@ -169,7 +185,8 @@ const parkingAreaCords: {
             start: [1, 42],
             vector: [10, 5]
         },
-		wayoutPath: 25
+		wayoutPath: 25,
+        wayoutCurveCnt: 1
     },
     19: {
         group: 'left',
@@ -178,7 +195,8 @@ const parkingAreaCords: {
             start: [1, 48],
             vector: [10, 4]
         },
-		wayoutPath: 24
+		wayoutPath: 24,
+        wayoutCurveCnt: 1
     },
     20: {
         group: 'left',
@@ -187,7 +205,8 @@ const parkingAreaCords: {
             start: [1, 52],
             vector: [10, 5]
         },
-		wayoutPath: 23
+		wayoutPath: 23,
+        wayoutCurveCnt: 1
     },
     21: {
         group: 'left',
@@ -196,7 +215,8 @@ const parkingAreaCords: {
             start: [1, 57],
             vector: [10, 5]
         },
-		wayoutPath: 22
+		wayoutPath: 22,
+        wayoutCurveCnt: 1
     },
     22: {
         group: 'left',
@@ -205,7 +225,8 @@ const parkingAreaCords: {
             start: [1, 63],
             vector: [10, 4]
         },
-		wayoutPath: 21
+		wayoutPath: 21,
+        wayoutCurveCnt: 1
     },
     23: {
         group: 'left',
@@ -214,7 +235,8 @@ const parkingAreaCords: {
             start: [1, 67],
             vector: [10, 5]
         },
-		wayoutPath: 20
+		wayoutPath: 20,
+        wayoutCurveCnt: 1
     },
     24: {
         group: 'left',
@@ -223,7 +245,8 @@ const parkingAreaCords: {
             start: [1, 72],
             vector: [10, 5]
         },
-		wayoutPath: 19
+		wayoutPath: 19,
+        wayoutCurveCnt: 1
     },
     25: {
         group: 'left',
@@ -232,7 +255,8 @@ const parkingAreaCords: {
             start: [1, 78],
             vector: [10, 4]
         },
-		wayoutPath: 18
+		wayoutPath: 18,
+        wayoutCurveCnt: 1
     },
     26: {
         group: 'left',
@@ -241,7 +265,8 @@ const parkingAreaCords: {
             start: [1, 82],
             vector: [10, 5]
         },
-		wayoutPath: 17
+		wayoutPath: 17,
+        wayoutCurveCnt: 1
     },
     27: {
         group: 'left',
@@ -250,7 +275,8 @@ const parkingAreaCords: {
             start: [1, 87],
             vector: [10, 5]
         },
-		wayoutPath: 16
+		wayoutPath: 16,
+        wayoutCurveCnt: 1
     },
     28: {
         group: 'left',
@@ -259,7 +285,8 @@ const parkingAreaCords: {
             start: [1, 93],
             vector: [10, 6]
         },
-		wayoutPath: 15
+		wayoutPath: 15,
+        wayoutCurveCnt: 1
     },
     29: {
         group: 'left',
@@ -268,7 +295,8 @@ const parkingAreaCords: {
             start: [1, 99],
             vector: [10, 6]
         },
-		wayoutPath: 14
+		wayoutPath: 14,
+        wayoutCurveCnt: 1
     },
     30: {
         group: 'left',
@@ -277,7 +305,8 @@ const parkingAreaCords: {
             start: [1, 106],
             vector: [10, 6]
         },
-		wayoutPath: 13
+		wayoutPath: 13,
+        wayoutCurveCnt: 1
     },
     31: {
         group: 'left',
@@ -286,7 +315,8 @@ const parkingAreaCords: {
             start: [1, 112],
             vector: [10, 5]
         },
-		wayoutPath: 12
+		wayoutPath: 12,
+        wayoutCurveCnt: 1
     },
     32: {
         group: 'left',
@@ -295,7 +325,8 @@ const parkingAreaCords: {
             start: [1, 118],
             vector: [10, 6]
         },
-		wayoutPath: 11
+		wayoutPath: 11,
+        wayoutCurveCnt: 1
     },
     33: {
         group: 'left',
@@ -304,7 +335,8 @@ const parkingAreaCords: {
             start: [1, 124],
             vector: [10, 6]
         },
-		wayoutPath: 10
+		wayoutPath: 10,
+        wayoutCurveCnt: 1
     },
     34: {
         group: 'middle',
@@ -313,7 +345,8 @@ const parkingAreaCords: {
             start: [23, 33],
             vector: [10, 4]
         },
-		wayoutPath: 27
+		wayoutPath: 27,
+        wayoutCurveCnt: 1
     },
     35: {
         group: 'middle',
@@ -322,7 +355,8 @@ const parkingAreaCords: {
             start: [23, 37],
             vector: [10, 5]
         },
-		wayoutPath: 27
+		wayoutPath: 27,
+        wayoutCurveCnt: 1
     },
     36: {
         group: 'middle',
@@ -331,7 +365,8 @@ const parkingAreaCords: {
             start: [23, 42],
             vector: [10, 5]
         },
-		wayoutPath: 26
+		wayoutPath: 26,
+        wayoutCurveCnt: 1
     },
     37: {
         group: 'middle',
@@ -340,7 +375,8 @@ const parkingAreaCords: {
             start: [23, 48],
             vector: [10, 4]
         },
-		wayoutPath: 25
+		wayoutPath: 25,
+        wayoutCurveCnt: 1
     },
     38: {
         group: 'middle',
@@ -349,7 +385,8 @@ const parkingAreaCords: {
             start: [23, 52],
             vector: [10, 5]
         },
-		wayoutPath: 24
+		wayoutPath: 24,
+        wayoutCurveCnt: 1
     },
     39: {
         group: 'middle',
@@ -358,7 +395,8 @@ const parkingAreaCords: {
             start: [23, 57],
             vector: [10, 5]
         },
-		wayoutPath: 23
+		wayoutPath: 23,
+        wayoutCurveCnt: 1
     },
     40: {
         group: 'middle',
@@ -367,7 +405,8 @@ const parkingAreaCords: {
             start: [23, 63],
             vector: [10, 4]
         },
-		wayoutPath: 22
+		wayoutPath: 22,
+        wayoutCurveCnt: 1
     },
     41: {
         group: 'middle',
@@ -376,7 +415,8 @@ const parkingAreaCords: {
             start: [23, 67],
             vector: [10, 5]
         },
-		wayoutPath: 21
+		wayoutPath: 21,
+        wayoutCurveCnt: 1
     },
     42: {
         group: 'middle',  
@@ -385,7 +425,8 @@ const parkingAreaCords: {
             start: [23, 72],
             vector: [10, 5]
         },
-		wayoutPath: 20
+		wayoutPath: 20,
+        wayoutCurveCnt: 1
     },
     43: {
         group: 'middle',
@@ -394,7 +435,8 @@ const parkingAreaCords: {
             start: [23, 78],
             vector: [10, 4]
         },
-		wayoutPath: 19
+		wayoutPath: 19,
+        wayoutCurveCnt: 1
     },
     44: {
         group: 'middle',
@@ -403,7 +445,8 @@ const parkingAreaCords: {
             start: [23, 82],
             vector: [10, 5]
         },
-		wayoutPath: 18
+		wayoutPath: 18,
+        wayoutCurveCnt: 1
     },
     45: {
         group: 'middle',
@@ -412,7 +455,8 @@ const parkingAreaCords: {
             start: [23, 87],
             vector: [10, 5]
         },
-		wayoutPath: 17
+		wayoutPath: 17,
+        wayoutCurveCnt: 1
     },
     46: {
         group: 'middle',
@@ -421,7 +465,8 @@ const parkingAreaCords: {
             start: [23, 93],
             vector: [10, 6]
         },
-		wayoutPath: 15
+		wayoutPath: 15,
+        wayoutCurveCnt: 1
     },
     47: {
         group: 'middle',
@@ -430,7 +475,8 @@ const parkingAreaCords: {
             start: [23, 99],
             vector: [10, 6]
         },
-		wayoutPath: 14
+		wayoutPath: 14,
+        wayoutCurveCnt: 1
     },
     48: {
         group: 'middle',
@@ -459,7 +505,7 @@ const parkingAreaCords: {
             start: [11, 130],
             vector: [6, 10]
         },
-		wayoutPath: 10,
+		// wayoutPath: 10,
     },
     51: {
         group: 'bottom',
