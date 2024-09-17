@@ -170,10 +170,11 @@ const cars:Car[] = [];
 // cars.push(new Car(cpl3Scene, 10), new Car(cpl3Scene, 20));
 
 function createRandomCarInfinite() {
-    const stdSpeed = Math.round(Math.random() * 10) + 10; // 10 to 20
-    const interval = (Math.round(Math.random() * 10) + 2) * 1000;
+    const stdSpeed = Math.round(Math.random() * 10) + 10; // 10 to 20 seconds
+    const interval = (Math.round(Math.random() * 10) + 2) * 1000; // 2000 to 12000 milli seconds
 
-    cars.push(new Car(cpl3Scene, stdSpeed));
+    const newCar = new Car(cpl3Scene, stdSpeed);
+    cars.push(newCar);
 
     setTimeout(createRandomCarInfinite, interval);
 
@@ -262,7 +263,7 @@ const render = () => {
     
     cars.forEach((car) => {
         car.sensorRay();
-    })
+    });
 
 }
 
