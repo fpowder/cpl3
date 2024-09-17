@@ -238,11 +238,11 @@ export default class Car {
         // determine park action
         const chance = Math.random() * 100;
         if(
-            eachPath.parkTo === 31
-            &&
-            !paStatus[eachPath.parkTo].parked
+            // eachPath.parkTo === 31
             // &&
-            // chance > 50
+            !paStatus[eachPath.parkTo].parked
+            &&
+            chance > 50
         ) {	
             this.currentSpeed = this.curveSpeed;
             console.log('park to: ', eachPath.parkTo)
@@ -636,6 +636,7 @@ export default class Car {
     }
 
     sensorRay(): any {
+        const stdDistance = 4;
         if(this.reversing === true) return;
 
         const sensorPos: Vector3 = this.frontSensor.getWorldPosition(new Vector3());
@@ -655,7 +656,7 @@ export default class Car {
             if(
                 item.object.parent?.parent?.name === 'car'
                 &&
-                item.distance < 5
+                item.distance < stdDistance
                 &&
                 item.object.parent?.parent?.userData.act === 'moving'
             ) {
@@ -670,7 +671,7 @@ export default class Car {
                 &&
                 clock.getElapsedTime() - this.stoppedTime > 0.6
                 &&
-                item.distance >= 5
+                item.distance >= stdDistance
             ) {    
                 this.timeline.resume();
                 break;
