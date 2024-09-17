@@ -164,9 +164,22 @@ const helper: Helper = new Helper(cpl3Scene);
 // testMesh.position.x = 1;
 // cpl3Scene.add(testMesh);
 
+const cars:Car[] = [];
+
 // sample car from glb
-const car = new Car(cpl3Scene, 10);
-const car2 = new Car(cpl3Scene, 20);
+// cars.push(new Car(cpl3Scene, 10), new Car(cpl3Scene, 20));
+
+function createRandomCarInfinite() {
+    const stdSpeed = Math.round(Math.random() * 10) + 10; // 10 to 20
+    const interval = (Math.round(Math.random() * 10) + 2) * 1000;
+
+    cars.push(new Car(cpl3Scene, stdSpeed));
+
+    setTimeout(createRandomCarInfinite, interval);
+
+}
+
+createRandomCarInfinite();
 
 // sample gate from glb
 const gate = new Gate(cpl3Scene);
@@ -227,14 +240,16 @@ const render = () => {
     // fps update
     helper.stats.update();
 
-    if(car.mixer) {
-        car.mixer.update(delta);
-    }
+    cars.forEach((car) => {
+        if(car.mixer) {
+            car.mixer.update(delta);
+        }
+    })
+   
     // renderer.setAnimationLoop(render);
     // renderer.render(cpl3Scene, camera);
     renderer.setAnimationLoop(() => {
-        if(car.mixer) car.mixer.update(delta);
-        
+        // if(car.mixer) car.mixer.update(delta);
     });
     renderer.render(cpl3Scene, camera);
     spotLight1Helper.update();
@@ -245,8 +260,10 @@ const render = () => {
     sideSpot1Helper.update();
     sideSpot2Helper.update();
     
-    car.sensorRay();
-    car2.sensorRay();
+    cars.forEach((car) => {
+        car.sensorRay();
+    })
+
 }
 
 gsap.ticker.add(render);
