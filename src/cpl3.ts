@@ -25,6 +25,7 @@ import Car from './component/Car';
 import Gate from './component/Gate';
 import colors from './config/colors';
 import './css/cpl3.css';
+import { carManager } from './singleton/carManager';
 
 // Renderer
 const canvas: Element = document.querySelector('#cpl3');
@@ -164,7 +165,6 @@ const helper: Helper = new Helper(cpl3Scene);
 // testMesh.position.x = 1;
 // cpl3Scene.add(testMesh);
 
-const cars:Car[] = [];
 
 // sample car from glb
 // cars.push(new Car(cpl3Scene, 10), new Car(cpl3Scene, 20));
@@ -174,7 +174,7 @@ function createRandomCarInfinite() {
     const interval = (Math.round(Math.random() * 10) + 2) * 1000; // 2000 to 12000 milli seconds
 
     const newCar = new Car(cpl3Scene, stdSpeed);
-    cars.push(newCar);
+    carManager.addCar(newCar);
 
     setTimeout(createRandomCarInfinite, interval);
 
@@ -241,7 +241,7 @@ const render = () => {
     // fps update
     helper.stats.update();
 
-    cars.forEach((car) => {
+    carManager.getCars().forEach((car) => {
         if(car.mixer) {
             car.mixer.update(delta);
         }
@@ -261,7 +261,7 @@ const render = () => {
     sideSpot1Helper.update();
     sideSpot2Helper.update();
     
-    cars.forEach((car) => {
+    carManager.getCars().forEach((car) => {
         car.sensorRay();
     });
 
