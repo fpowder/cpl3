@@ -74,13 +74,13 @@ export default class Car {
             (gltf) => {
 
                 gltf.scene.traverse(child => {
-                    console.log(child);
+                    // console.log(child);
                     
                     if((child as Mesh).isMesh) {
                         child.castShadow = true;
                     }
                 });
-                console.log('gltf.scene.children[0] : ',gltf.scene.children[0]);
+                // console.log('gltf.scene.children[0] : ',gltf.scene.children[0]);
                 // console.log(gltf.animations);
                 this.mesh = gltf.scene.children[0] as Mesh;
                 this.mesh.name = 'car';
@@ -240,6 +240,8 @@ export default class Car {
         if(
             // eachPath.parkTo === 31
             // &&
+            paStatus[eachPath.parkTo]
+            &&
             !paStatus[eachPath.parkTo].parked
             &&
             chance > 50
@@ -458,8 +460,11 @@ export default class Car {
                 
                                                                     })(),
                                                                     onComplete: () => {
-                                                                        this.mesh.remove();
+                                                                        console.log(`This car wayout complete mesh ID: ${this.mesh.id}`)
                                                                         this.mesh.clear();
+                                                                        this.mesh.remove();
+                                                                        // cpl3Scene.remove(this.mesh);
+                                                                        
                                                                     }
                                                                 }
                                                             );
@@ -534,7 +539,7 @@ export default class Car {
 		const points: Vector3[] = bezierPoints(quadraticPath);
 
         // draw quadratic bezier points
-        drawBezierPath(points);
+        // drawBezierPath(points);
 
         for(let i = 1; i < points.length - 1; i++) {
 			timeline.to(

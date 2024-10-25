@@ -1,7 +1,7 @@
 import parkingAreaCords from '../config/parkingAreaCords';
 
 // current parkingArea status
-class cpl {
+class CurrentParkingLot {
 	
 	paStatus: {} = {};
 
@@ -14,6 +14,6 @@ class cpl {
 	}
 }
 
-const currentCpl = new cpl();
+const currentCpl = new CurrentParkingLot();
 
 export const paStatus = currentCpl.paStatus;
